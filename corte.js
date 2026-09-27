@@ -5857,6 +5857,55 @@ window.thickenLines = function() {
     });
 };
 
+
+window.setMasterStep = function(step) {
+    if (!sceneRoot) return;
+    
+    // Default hiding EVERYTHING (start from a clean base)
+    if (groundMesh) groundMesh.visible = true;
+    if (waterMesh) waterMesh.visible = true;
+    
+    const showTrees = step >= 3;
+    const showHumedal = step >= 1;
+    const showBirds = step >= 2;
+    
+    const showRoads = step >= 6;
+    const showBuildings = step >= 7;
+    
+    const showPoles = step >= 10;
+    const showSensors = step >= 12;
+    const showVehicles = step >= 13;
+    const showNoise = step >= 13; // O cualquier paso final
+    
+    if (treeMesh) treeMesh.visible = showTrees;
+    if (mainBurroMesh) mainBurroMesh.visible = showHumedal;
+    if (birdsGroup) birdsGroup.visible = showBirds;
+    
+    if (roadMesh) roadMesh.visible = showRoads;
+    if (currentBuildingMesh) currentBuildingMesh.visible = showBuildings;
+    if (currentBuildingEdgeMesh) currentBuildingEdgeMesh.visible = showBuildings;
+    if (currentBuildingCornerMesh) currentBuildingCornerMesh.visible = showBuildings;
+    if (manzanasMesh) manzanasMesh.visible = showBuildings;
+    
+    // Luces/Postes
+    sceneRoot.children.forEach(ch => {
+        if (ch.geometry && ch.geometry.type === 'CylinderGeometry' && ch.material.color.getHex() === 0x33383d) {
+             ch.visible = showPoles; // Pole
+        }
+    });
+    
+    if (crossMesh) crossMesh.visible = showSensors;
+    if (vehInstanced) vehInstanced.visible = showVehicles;
+    if (noiseMesh) noiseMesh.visible = showNoise;
+    
+    // Colores del terreno segun la capa
+    if (step >= 5 && step <= 8) {
+        if (roadMat) roadMat.color.setHex(0x7a838d);
+    } else {
+        if (roadMat) roadMat.color.setHex(0x9099a3);
+    }
+};
+
 window.takeSnapshotsAndStart = function() {
     const origRoadColor = roadMat ? roadMat.color.getHex() : null;
     const origNoiseVis = noiseMesh ? noiseMesh.visible : false;
