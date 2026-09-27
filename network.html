@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Red Causal - Nodos y Flujos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --void: #050308;
+      --panel: #0c0a14;
+      --dim: #9a93ad;
+      --ice: #f4f2ff;
+      --violet: #8052ff;
+      --amber: #ffb829;
+      --font: 'Geist', sans-serif;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--void);
+      color: var(--ice);
+      font-family: var(--font);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    .toolbar {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
+      display: flex;
+      gap: 12px;
+      background: rgba(12, 10, 20, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--ice);
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    .btn.active {
+      background: rgba(128, 82, 255, 0.2);
+      border-color: var(--violet);
+      color: #fff;
+    }
+    .btn-amber.active {
+      background: rgba(255, 184, 41, 0.2);
+      border-color: var(--amber);
+      color: #fff;
+    }
+    #canvas-container {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .tooltip {
+      position: absolute;
+      pointer-events: none;
+      background: rgba(12, 10, 20, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 12px 16px;
+      border-radius: 8px;
+      max-width: 280px;
+      color: var(--ice);
+      font-size: 13px;
+      line-height: 1.5;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      transform: translateY(10px);
+      z-index: 20;
+    }
+    .tooltip.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .tooltip-title {
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tooltip-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .tooltip-desc {
+      color: var(--dim);
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <button class="btn" id="btnHubs"><i class="fa-solid fa-circle-nodes"></i> Destacar Hubs</button>
+    <button class="btn btn-amber" id="btnBridges"><i class="fa-solid fa-bridge"></i> Ver Nodos Puente</button>
+  </div>
+  
+  <div id="canvas-container">
+    <canvas id="networkCanvas"></canvas>
+    <div class="tooltip" id="tooltip">
+      <div class="tooltip-title"><div class="tooltip-dot" id="tt-dot"></div> <span id="tt-title"></span></div>
+      <div class="tooltip-desc" id="tt-desc"></div>
+    </div>
+  </div>
+
+  <script src="network.js"></script>
+</body>
+</html>
