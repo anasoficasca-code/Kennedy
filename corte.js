@@ -1992,18 +1992,17 @@
     updatePenOutput();
   });
   canvas.addEventListener("click", (e) => {
-    // Ya no se congela la vista en 3 fotos separadas: en vez de eso, se
-    // revela el panel de convenciones + el corte (quedan ocultos hasta
-    // este primer clic, para que el modulo siga abriendo igual que antes).
-    const legendPanelEl = document.getElementById("legendPanel");
-    const sectionWrapEl = document.getElementById("sectionWrap");
-    if (legendPanelEl && legendPanelEl.style.display === "none") {
-      legendPanelEl.style.display = "block";
-      sectionWrapEl.style.display = "block";
-      resizeSectionView();
-      placeSectionCutAtHumedal();
-    }
-    // return; // REMOVED BY ANTIGRAVITY TO RE-ENABLE EXPLOSION
+    // OLD BEHAVIOR:
+    // const legendPanelEl = document.getElementById("legendPanel");
+    // const sectionWrapEl = document.getElementById("sectionWrap");
+    // if (legendPanelEl && legendPanelEl.style.display === "none") {
+    //   legendPanelEl.style.display = "block";
+    //   sectionWrapEl.style.display = "block";
+    //   resizeSectionView();
+    //   placeSectionCutAtHumedal();
+    // }
+    // return;
+    
     if (penActive) return; // mientras se dibuja el poligono, no se dispara la explosion
 
     // Guardar estado y fondo original
