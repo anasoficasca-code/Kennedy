@@ -9,20 +9,31 @@
   <style>
     body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #050308; font-family: 'Geist', sans-serif; }
     iframe { width: 100%; height: 100%; border: none; display: block; }
+    /* Botón Volver súper animado y top-right */
     .back-btn {
-      position: fixed; top: 20px; left: 20px; z-index: 1000;
-      background: rgba(12, 10, 20, 0.85); backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #f4f2ff; padding: 10px 18px; border-radius: 999px;
-      font-size: 14px; font-weight: 500; text-decoration: none;
-      display: flex; align-items: center; gap: 8px; transition: all 0.2s ease;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      position: absolute; top: 24px; right: 24px; z-index: 1000;
+      background: rgba(12, 10, 20, 0.6); backdrop-filter: blur(10px);
+      border: 1px solid rgba(128, 82, 255, 0.3);
+      color: #8052ff; padding: 12px 24px; border-radius: 999px;
+      font-size: 13px; font-weight: 600; text-decoration: none; text-transform: uppercase; letter-spacing: 0.1em;
+      display: flex; align-items: center; gap: 10px; cursor: pointer; overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1); box-shadow: 0 0 20px rgba(128, 82, 255, 0.1);
     }
-    .back-btn:hover { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.3); }
+    .back-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(128, 82, 255, 0.2), transparent); transition: all 0.5s ease; }
+    .back-btn:hover { background: rgba(128, 82, 255, 0.1); border-color: rgba(128, 82, 255, 0.6); transform: scale(1.05); box-shadow: 0 0 30px rgba(128, 82, 255, 0.3); color: #fff; }
+    .back-btn:hover::before { left: 100%; }
+    .back-btn span { display: inline-block; animation: floatText 3s ease-in-out infinite; }
+    .back-btn span:nth-child(1) { animation-delay: 0.0s; } .back-btn span:nth-child(2) { animation-delay: 0.1s; }
+    .back-btn span:nth-child(3) { animation-delay: 0.2s; } .back-btn span:nth-child(4) { animation-delay: 0.3s; }
+    .back-btn span:nth-child(5) { animation-delay: 0.4s; } .back-btn span:nth-child(6) { animation-delay: 0.5s; }
+    @keyframes floatText { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); color: #fff; } }
   </style>
 </head>
 <body>
-  <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Volver al Menú</a>
+  <a href="index.html" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i>
+    <div><span>V</span><span>o</span><span>l</span><span>v</span><span>e</span><span>r</span></div>
+  </a>
   <iframe src="https://anasoficasca-code.github.io/modelamiento2/modulo-08-3d.html?embed=1" onload="hideUI(this)"></iframe>
   <script>
     function hideUI(iframe) {
