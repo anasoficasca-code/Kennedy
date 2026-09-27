@@ -2066,8 +2066,8 @@
     if (imgCultural) imgCultural.src = fotoCultural;
     if (imgTecno) imgTecno.src = fotoTecno;
 
-    document.getElementById("sceneWrap").style.display = "none";
-    explodeOverlay.style.display = "flex";
+    //
+    //
     void explodeOverlay.offsetWidth;
     explodeLayers.forEach(el => { el.style.opacity = "1"; el.style.transform = "scale(1)"; });
 
@@ -2077,8 +2077,8 @@
     }, 60);
   });
   document.getElementById("explodeClose").addEventListener("click", () => {
-    explodeOverlay.style.display = "none";
-    document.getElementById("sceneWrap").style.display = "block";
+    //
+    //
     explodeLayers.forEach(el => { el.style.opacity = "0"; el.style.transform = "scale(.05)"; });
     hideAllHandles();
   });
@@ -5840,8 +5840,8 @@ window.setCustomCut = function(rot, x1, x2, z1, z2, y1, y2, cx, cy, cz, tx, ty, 
     controls.update();
 
     // Habilitar seccin visible (por si estaba oculta)
-    document.getElementById('legendPanel').style.display = 'block';
-    document.getElementById('sectionWrap').style.display = 'block';
+    //
+    //
 };
 
 

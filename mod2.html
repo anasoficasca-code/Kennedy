@@ -63,6 +63,12 @@
 
     window.addEventListener('load', () => {
       setTimeout(() => {
+        const winAxo = document.getElementById("mainFrame").contentWindow;
+        // Tomamos las fotografías pesadas MIENTRAS está la pantalla de carga para que el usuario no sienta el lag.
+        if (winAxo && winAxo.takeSnapshotsAndStart) {
+           winAxo.takeSnapshotsAndStart();
+        }
+
         const loader = document.getElementById('main-loader');
         if(loader) {
           loader.style.opacity = '0';
@@ -79,13 +85,8 @@
       if (!winAxo) return;
 
       if (masterStep === 0) {
+        // En el paso 0, simplemente mostramos las capas generadas instantáneamente
         document.body.classList.add('is-active');
-        
-        // Timeout para que el UI (si hubiera) responda antes de la pesada toma de fotos WebGL
-        setTimeout(() => {
-          if(winAxo.takeSnapshotsAndStart) winAxo.takeSnapshotsAndStart();
-          // NOTA: Se eliminó setCustomCut por petición del usuario (ya no hay panel de corte)
-        }, 50);
       } 
       else if (masterStep >= 1 && masterStep <= 4) {
         if(winAxo.triggerNextNatural) winAxo.triggerNextNatural();
@@ -144,6 +145,9 @@
              box-shadow: none !important;
              border: none !important;
           }
+          
+          /* When active, show the master explodeOverlay wrapper */
+          body.is-active #explodeOverlay { display: flex !important; }
           
           .explode-clip {
              transform: scale(0.9) translateY(0) !important;
