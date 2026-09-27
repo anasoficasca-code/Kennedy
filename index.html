@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Problemas · Kennedy — RAPOT</title>
+<title>Menú · Kennedy — RAPOT</title>
 <meta name="description" content="Cuatro lecturas axonométricas del colapso operativo y logístico de Kennedy.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,291 +17,173 @@
   --dim: #9a93ad;
   --violet: #8052ff; 
   --amber: #ffb829;
-  --font: 'Geist', ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --pad: clamp(20px, 4vw, 64px);
+  --font: 'Geist', sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{background:var(--void);scroll-behavior:smooth}
-body{font-family:var(--font);font-weight:200;background:var(--void);color:var(--dim);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+html{background:var(--void);}
+body{font-family:var(--font);font-weight:200;background:var(--void);color:var(--dim);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased; padding: 40px 20px;}
 a{color:inherit;text-decoration:none}
-button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
-:focus-visible{outline:2px solid var(--violet);outline-offset:3px}
-.wrap{max-width:1400px;margin:0 auto;padding:0 var(--pad);width:100%}
 
-#cloud{position:absolute;inset:0;width:100%;height:100%;z-index:0;display:block}
-
-/* ---------- nav ---------- */
-.nav{position:fixed;inset:0 0 auto 0;z-index:20;padding-top:env(safe-area-inset-top,0px);transition:background .3s ease, border-bottom 0.3s ease;}
-.nav.solid{background:rgba(5,3,8,.86);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom: 1px solid rgba(255,255,255,0.05);}
-.nav-in{height:76px;display:flex;align-items:center;gap:20px}
-.brand{display:flex;align-items:center;gap:12px;color:var(--ice);font-weight:600;font-size:16px;letter-spacing: 0.03em;}
-.brand svg{width:28px;height:28px}
-.back{margin-left:auto;display:flex;align-items:center;gap:8px;color:var(--dim);font-size:13px;border:1px solid rgba(244,242,255,.16);border-radius:999px;padding:9px 18px;transition:border-color .2s ease,color .2s ease, background 0.2s ease;}
-.back:hover{color:var(--ice);border-color:rgba(244,242,255,.4); background:rgba(255,255,255,0.05);}
-
-/* ---------- hero ---------- */
-.hero{position:relative;z-index:2;padding:120px 0 60px}
-.eyebrow{display:inline-block;font-size:13px;font-weight:600;letter-spacing:.06em;color:var(--amber);background:rgba(255,184,41,0.1);padding:4px 12px;border-radius:99px;opacity:0;animation:pv-rise .6s cubic-bezier(.22,1,.36,1) .05s forwards}
-.hero h1{margin-top:24px;font-weight:400;color:var(--ice);letter-spacing:-.03em;line-height:1.04;
-  font-size:clamp(2.2rem,5vw,4rem);max-width:18ch;opacity:0;animation:pv-rise .7s cubic-bezier(.22,1,.36,1) .14s forwards}
-.hero p{margin-top:20px;max-width:65ch;font-size:18px;font-weight:300;color:var(--dim);opacity:0;animation:pv-rise .7s cubic-bezier(.22,1,.36,1) .26s forwards}
-.scroll-hint{margin-top:40px;display:flex;align-items:center;gap:14px;font-size:13px;color:var(--dim);
-  opacity:0;animation:pv-rise .7s cubic-bezier(.22,1,.36,1) .36s forwards}
-.scroll-hint i{display:block;width:1px;height:48px;background:linear-gradient(var(--amber),transparent);animation:pv-drip 2.2s ease-in-out infinite}
-@keyframes pv-rise{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:translateY(0); } }
-@keyframes pv-drip{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
-
-/* ---------- el hilo: rail vertical con un punto por escena ---------- */
-.thread{position:fixed;top:50%;right:32px;transform:translateY(-50%);z-index:15;display:flex;flex-direction:column;align-items:center;gap:0}
-.thread-line{position:absolute;top:14px;bottom:14px;left:50%;width:2px;background:rgba(244,242,255,.08);transform:translateX(-50%); border-radius:2px;}
-.thread-fill{position:absolute;top:14px;left:50%;width:2px;background:linear-gradient(var(--amber),var(--violet));transform:translateX(-50%);height:0%;transition:height .3s ease;border-radius:2px;box-shadow: 0 0 10px var(--violet);}
-.thread-dot{position:relative;z-index:1;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.thread-dot::before{content:"";width:10px;height:10px;border-radius:50%;background:rgba(244,242,255,.2);transition:all .25s cubic-bezier(.22,1,.36,1);box-shadow:0 0 0 0 transparent}
-.thread-dot:hover::before{background:rgba(244,242,255,.8);transform:scale(1.25)}
-.thread-dot.active::before{background:var(--c,var(--amber));transform:scale(1.5);box-shadow:0 0 16px 3px var(--c,var(--amber))}
-.thread-label{position:absolute;right:42px;top:50%;transform:translateY(-50%);white-space:nowrap;font:500 12px/1 var(--font);
-  letter-spacing:.04em;color:var(--ice);background:rgba(12,10,20,.95);border:1px solid rgba(244,242,255,.14);border-radius:6px;
-  padding:8px 12px;opacity:0;pointer-events:none;transition:opacity .2s ease, transform 0.2s ease; transform:translateY(-50%) translateX(10px);}
-.thread-dot:hover .thread-label{opacity:1; transform:translateY(-50%) translateX(0);}
-@media (max-width:900px){ .thread{display:none} }
-
-/* ---------- secciones de escena ---------- */
-.scene-section{position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding-top:60px}
-.scene-head{position:relative;z-index:2;padding:0 var(--pad) 24px;opacity:0;transform:translateY(24px);
-  transition:opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1)}
-.scene-section.in-view .scene-head{opacity:1;transform:translateY(0)}
-.scene-head-in{max-width:1400px;margin:0 auto;display:flex;align-items:baseline;gap:20px;flex-wrap:wrap}
-.scene-head .n{font:600 13px/1 var(--font);letter-spacing:.15em;color:var(--c,var(--amber))}
-.scene-head h2{font-weight:400;font-size:clamp(1.6rem,3.2vw,2.5rem);letter-spacing:-.02em;color:var(--ice)}
-.scene-head p{flex:1 1 350px;font-size:15px;color:var(--dim);max-width:75ch; font-weight:300;}
-.scene-stage{position:relative;height:min(90vh,980px);min-height:500px;margin:0 16px 20px;border-radius:20px;overflow:hidden;
-  border:1px solid rgba(244,242,255,.08);background:var(--panel);
-  opacity:0;transform:translateY(40px) scale(.96);
-  transition:opacity .8s cubic-bezier(.22,1,.36,1) .05s, transform .8s cubic-bezier(.22,1,.36,1) .05s, box-shadow 1s ease .1s}
-.scene-section.in-view .scene-stage{opacity:1;transform:translateY(0) scale(1);
-  box-shadow:0 50px 100px -30px rgba(0,0,0,.8), 0 0 0 1px var(--c,var(--violet)), 0 0 80px -15px var(--c,var(--violet))}
-.scene-stage iframe{width:100%;height:100%;border:0;display:block;background:var(--panel)}
-@media (max-width:860px){
-  .scene-section{padding-top:40px}
-  .scene-stage{margin:0 12px 12px;height:min(80vh,750px)}
-  .scene-head{padding:0 20px 20px}
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
-/* ---------- cierre ---------- */
-.closing{position:relative;z-index:2;padding:80px var(--pad) 100px}
-.closing .band{max-width:1400px;margin:0 auto;border-top:1px dashed rgba(244,242,255,.16);padding-top:40px;
-  display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center}
-.closing p{max-width:55ch;font-size:15px;color:var(--dim);}
-.closing a.ghost{font-size:14px;color:var(--ice);font-weight:500;border-bottom:1px solid rgba(244,242,255,.4);transition:color 0.2s ease, border-color 0.2s ease;}
-.closing a.ghost:hover{color:var(--amber); border-color:var(--amber);}
+header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+.eyebrow {
+  display:inline-block;font-size:13px;font-weight:600;letter-spacing:.06em;color:var(--amber);background:rgba(255,184,41,0.1);padding:4px 12px;border-radius:99px; margin-bottom: 20px;
+}
+h1 {
+  font-weight:400;color:var(--ice);letter-spacing:-.03em;line-height:1.1; font-size:clamp(2rem,4vw,3.2rem);
+}
+p.subtitle {
+  margin-top:20px;font-size:18px;font-weight:300;color:var(--dim);
+}
 
-@media (prefers-reduced-motion:reduce){
-  html{scroll-behavior:auto}
-  .eyebrow,.hero h1,.hero p,.scroll-hint{animation:none;opacity:1}
-  .scroll-hint i{animation:none}
-  .scene-head,.scene-stage{transition:none;opacity:1;transform:none}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 32px 24px;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+.card:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.2);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
+  background: var(--c);
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+.card:hover::before { opacity: 1; }
+
+.card-num {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c);
+  letter-spacing: 0.1em;
+  margin-bottom: 16px;
+}
+.card h2 {
+  color: var(--ice);
+  font-size: 22px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  line-height: 1.3;
+}
+.card p {
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--dim);
+  margin-bottom: 24px;
+  flex-grow: 1;
+}
+.card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ice);
+  font-size: 14px;
+  font-weight: 500;
+}
+.card:hover .card-link {
+  color: var(--c);
+}
+
+#cloud {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;
 }
 </style>
 </head>
 <body>
 
-<header class="nav" id="nav">
-  <div class="wrap nav-in">
-    <a class="brand" href="https://anasoficasca-code.github.io/modelamiento2/v2.html" aria-label="RAPOT">
-      <svg viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="16" fill="none" stroke="#ffb829" stroke-opacity=".5" stroke-width="1.2"/><circle cx="17" cy="9" r="3" fill="#f4f2ff"/><circle cx="10" cy="21" r="3" fill="#f4f2ff"/><circle cx="24" cy="21" r="3" fill="#f4f2ff"/></svg>
-      RAPOT KENNEDY
+<canvas id="cloud"></canvas>
+
+<div class="container">
+  <header>
+    <div class="eyebrow">TERRITORIO KENNEDY</div>
+    <h1>Menú de Módulos</h1>
+    <p class="subtitle">Selecciona una de las cuatro lecturas del colapso operativo para verla a pantalla completa.</p>
+  </header>
+
+  <div class="grid">
+    
+    <a href="mod1.html" class="card" style="--c:#8052ff">
+      <div class="card-num">MÓDULO 01</div>
+      <h2>Simulación 3D de tránsito</h2>
+      <p>El flujo vehicular corriendo en vivo sobre la malla vial real de Kennedy.</p>
+      <div class="card-link">Abrir módulo <i class="fa-solid fa-arrow-right"></i></div>
     </a>
-    <a class="back" href="https://anasoficasca-code.github.io/modelamiento2/v2.html"><i class="fa-solid fa-arrow-left"></i> Volver al Modelo Completo</a>
+
+    <a href="mod2.html" class="card" style="--c:#ffb829">
+      <div class="card-num">MÓDULO 02</div>
+      <h2>Corte axonométrico</h2>
+      <p>Límites móviles: corta el modelo del territorio al instante para revelar qué hay debajo.</p>
+      <div class="card-link">Abrir módulo <i class="fa-solid fa-arrow-right"></i></div>
+    </a>
+
+    <a href="mod3.html" class="card" style="--c:#4fdccc">
+      <div class="card-num">MÓDULO 03</div>
+      <h2>Problemáticas de Kennedy</h2>
+      <p>La red causal completa sobre el mapa 3D real: descubre las relaciones territoriales.</p>
+      <div class="card-link">Abrir módulo <i class="fa-solid fa-arrow-right"></i></div>
+    </a>
+
+    <a href="network.html" class="card" style="--c:#ff4d82">
+      <div class="card-num">MÓDULO 04</div>
+      <h2>Red Causal Dinámica</h2>
+      <p>Nueva visualización de la red: interactúa con Nodos, Hubs y Puentes del sistema.</p>
+      <div class="card-link">Abrir módulo <i class="fa-solid fa-arrow-right"></i></div>
+    </a>
+
   </div>
-</header>
-
-<section class="hero">
-  <canvas id="cloud" aria-hidden="true"></canvas>
-  <div class="wrap" style="position:relative">
-    <p class="eyebrow">TERRITORIO KENNEDY</p>
-    <h1>Un territorio que ya no alcanza a sostener su propio modelo de ocupación.</h1>
-    <p>Cuatro lecturas del mismo lugar, cada una desde su propio corte axonométrico. Baja para recorrerlas a pantalla completa y descubre la red dinámica de flujos.</p>
-    <div class="scroll-hint"><i aria-hidden="true"></i>Baja para recorrer las escenas</div>
-  </div>
-</section>
-
-<main id="scenes"></main>
-
-<nav class="thread" id="thread" aria-label="Escenas">
-  <span class="thread-line"></span>
-  <span class="thread-fill" id="threadFill"></span>
-</nav>
-
-<section class="closing">
-  <div class="band">
-    <p>Estas cuatro escenas comparten el mismo territorio real de Kennedy — lo que cambia es el corte con el que se mira y la red de dependencias ocultas que lo configuran.</p>
-    <a class="ghost" href="https://anasoficasca-code.github.io/modelamiento2/v2.html#modulos">Ver el resto de los módulos <i class="fa-solid fa-arrow-right"></i></a>
-  </div>
-</section>
+</div>
 
 <script>
-(function(){
-'use strict';
-
-// 1. Array de escenas dinámicas. 
-// Las primeras 3 vienen de modelamiento2 (axonometrías originales).
-// La 4ª apunta a nuestro nuevo "network.html" local y ultra-ligero.
-var SCENES = [
-  { c:'#8052ff', n:'01', t:'Simulación 3D de tránsito', href:'https://anasoficasca-code.github.io/modelamiento2/modulo-08-3d.html?embed=1',
-    d:'El flujo vehicular corriendo en vivo sobre la malla vial real de Kennedy — arrastra para girar, rueda para zoom.' },
-  { c:'#ffb829', n:'02', t:'Corte axonométrico', href:'https://anasoficasca-code.github.io/modelamiento2/modulo-10-corte.html?embed=1',
-    d:'Seis límites móviles: mueve cualquiera y el modelo del territorio se corta al instante para revelar lo que hay debajo.' },
-  { c:'#4fdccc', n:'03', t:'Problemáticas de Kennedy', href:'https://anasoficasca-code.github.io/modelamiento2/modulo-12-problemas.html?embed=1',
-    d:'La red causal completa sobre el mapa 3D real: cada burbuja es una causa, cada flecha una relación del POT en Kennedy.' },
-  { c:'#ff4d82', n:'04', t:'Colapso operativo y logístico (Red Dinámica)', href:'network.html',
-    d:'Nueva visualización de la red: Nodos interactivos y flujos directos/indirectos. Destaca los Hubs y calcula los Nodos Puente que sostienen el sistema.' }
-];
-
-/* ================= construir las secciones y el hilo ================= */
-var scenesEl = document.getElementById('scenes');
-var threadEl = document.getElementById('thread');
-var threadHtml = '<span class="thread-line"></span><span class="thread-fill" id="threadFill"></span>';
-var scenesHtml = '';
-
-SCENES.forEach(function(s, i){
-  var id = 'sc-'+i;
-  // Panel de escena
-  scenesHtml += '<section class="scene-section" id="'+id+'" style="--c:'+s.c+'">'+
-    '<div class="scene-head"><div class="scene-head-in">'+
-    '<span class="n">'+s.n+'</span><h2>'+s.t+'</h2><p>'+s.d+'</p>'+
-    '</div></div>'+
-    '<div class="scene-stage"><iframe data-src="'+s.href+'" title="'+s.t+'" loading="lazy"></iframe></div>'+
-    '</section>';
-  
-  // Punto en el hilo de navegación lateral
-  threadHtml += '<a href="#'+id+'" class="thread-dot" data-idx="'+i+'" style="--c:'+s.c+'" aria-label="Escena '+s.n+'">'+
-    '<span class="thread-label">'+s.t+'</span></a>';
-});
-
-scenesEl.innerHTML = scenesHtml;
-threadEl.innerHTML = threadHtml;
-
-/* ================= intersection observer para revelar & cargar iframes ================= */
-var sections = [].slice.call(document.querySelectorAll('.scene-section'));
-var dots = [].slice.call(document.querySelectorAll('.thread-dot'));
-var threadFill = document.getElementById('threadFill');
-var activeIdx = -1;
-
-function hideIframeUI(iframe) {
-  try {
-    var doc = iframe.contentWindow.document;
-    if (!doc) return;
-    var style = doc.createElement('style');
-    // Inyectamos CSS para ocultar las barras laterales y los menús en las axonometrías incrustadas
-    style.textContent = `
-      .sidebar, .site-nav, .navigation-unified, aside, .nav, header { display: none !important; }
-      .app, .main, body, .viewport, .map-container, #map { padding-left: 0 !important; margin-left: 0 !important; left: 0 !important; width: 100% !important; max-width: 100% !important; }
-      .overlay-tools { left: 20px !important; }
-    `;
-    doc.head.appendChild(style);
-  } catch(e) {
-    console.log('No se pudo inyectar CSS en el iframe (CORS local o restringido)', e);
-  }
-}
-
-var obs = new IntersectionObserver(function(entries){
-  entries.forEach(function(e){
-    var el = e.target;
-    if (e.isIntersecting){
-      el.classList.add('in-view');
-      // Lazy load del iframe
-      var iframe = el.querySelector('iframe');
-      if (iframe && !iframe.src) {
-        iframe.onload = function() { hideIframeUI(iframe); };
-        iframe.src = iframe.getAttribute('data-src');
-      }
-    }
-  });
-}, { threshold: [0, 0.15, 0.4, 1] });
-
-sections.forEach(function(sec){ obs.observe(sec); });
-
-/* ================= scroll & hilo de navegación ================= */
-var nav = document.getElementById('nav');
-
-function onScroll(){
-  var scrollY = window.scrollY;
-  var wh = window.innerHeight;
-  nav.classList.toggle('solid', scrollY > 40);
-
-  // Determinar qué sección está activa (la que domina la pantalla)
-  var mid = scrollY + wh * 0.6;
-  var found = -1;
-  sections.forEach(function(sec, i){
-    var top = sec.offsetTop, bottom = top + sec.offsetHeight;
-    if (mid >= top && mid <= bottom) found = i;
-  });
-  
-  if (found === -1 && scrollY < wh*0.5) found = 0; // Hero area = focus scene 0
-  if (found !== activeIdx && found >= 0) {
-    activeIdx = found;
-    dots.forEach(function(d, i){ d.classList.toggle('active', i === activeIdx); });
-    
-    // Animar la línea de progreso
-    if (dots.length > 1) {
-      var pct = (activeIdx / (dots.length - 1)) * 100;
-      threadFill.style.height = pct + '%';
-    }
-  }
-}
-window.addEventListener('scroll', onScroll, {passive:true});
-window.addEventListener('resize', onScroll, {passive:true});
-onScroll();
-
-/* ================= animación atmosférica (nube de puntos) ================= */
+// Fondo de estrellas sutil
 var canvas = document.getElementById('cloud');
-if (canvas) {
-  var ctx = canvas.getContext('2d');
-  var W, H, dpr;
-  var pts = [];
-  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  
-  function resizeCloud(){
-    var r = canvas.getBoundingClientRect();
-    dpr = Math.min(window.devicePixelRatio||1, 2);
-    W = r.width; H = r.height;
-    canvas.width = W*dpr; canvas.height = H*dpr;
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-  }
-  window.addEventListener('resize', resizeCloud);
-  resizeCloud();
-
-  for(var i=0;i<(reduce?30:70);i++) {
-    pts.push({
-      x: Math.random()*100, y: Math.random()*100,
-      s: Math.random()*1.5 + 0.5,
-      vx: (Math.random()-0.5)*0.1, vy: (Math.random()-0.5)*0.1,
-      a: Math.random()*Math.PI*2
-    });
-  }
-
-  function frame(){
-    ctx.clearRect(0,0,W,H);
-    ctx.fillStyle = 'rgba(244,242,255,0.15)';
-    pts.forEach(function(p){
-      p.x += p.vx; p.y += p.vy;
-      if (p.x < 0) p.x = 100; if (p.x > 100) p.x = 0;
-      if (p.y < 0) p.y = 100; if (p.y > 100) p.y = 0;
-      var px = W * (p.x/100);
-      var py = H * (p.y/100);
-      var op = 0.4 + 0.3 * Math.sin(Date.now()*0.001 + p.a);
-      ctx.globalAlpha = op;
-      ctx.beginPath();
-      ctx.arc(px, py, p.s, 0, Math.PI*2);
-      ctx.fill();
-    });
-    ctx.globalAlpha = 1;
-    if(!reduce) requestAnimationFrame(frame);
-  }
-  if(!reduce) requestAnimationFrame(frame); else frame();
+var ctx = canvas.getContext('2d');
+var W, H;
+var pts = [];
+function resize() {
+  W = window.innerWidth; H = window.innerHeight;
+  canvas.width = W; canvas.height = H;
 }
-
-})();
+window.addEventListener('resize', resize);
+resize();
+for(var i=0; i<50; i++) {
+  pts.push({ x: Math.random()*W, y: Math.random()*H, s: Math.random()*1.5, a: Math.random()*Math.PI*2 });
+}
+function frame() {
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle = 'rgba(255,255,255,0.1)';
+  pts.forEach(p => {
+    p.y -= 0.2; if(p.y < 0) p.y = H;
+    ctx.globalAlpha = 0.3 + 0.3*Math.sin(Date.now()*0.001 + p.a);
+    ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI*2); ctx.fill();
+  });
+  requestAnimationFrame(frame);
+}
+frame();
 </script>
 </body>
 </html>
