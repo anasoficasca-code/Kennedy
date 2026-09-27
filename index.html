@@ -1,456 +1,289 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>RAPOT · Modelamiento Dinámico · Caso Kennedy</title>
-  <meta name="description" content="Ingeniería inversa al POT de Bogotá y modelamiento dinámico de la ciudad con foco en la localidad de Kennedy. Versión ultra-ligera y dinámica.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Problemas · Kennedy — RAPOT</title>
+<meta name="description" content="Cuatro lecturas axonométricas del colapso operativo y logístico de Kennedy.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@200;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root{
+  --void: #050308; 
+  --panel: #0c0a14; 
+  --ice: #f4f2ff; 
+  --dim: #9a93ad;
+  --violet: #8052ff; 
+  --amber: #ffb829;
+  --font: 'Geist', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --pad: clamp(20px, 4vw, 64px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--void);scroll-behavior:smooth}
+body{font-family:var(--font);font-weight:200;background:var(--void);color:var(--dim);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--violet);outline-offset:3px}
+.wrap{max-width:1400px;margin:0 auto;padding:0 var(--pad);width:100%}
+
+#cloud{position:absolute;inset:0;width:100%;height:100%;z-index:0;display:block}
+
+/* ---------- nav ---------- */
+.nav{position:fixed;inset:0 0 auto 0;z-index:20;padding-top:env(safe-area-inset-top,0px);transition:background .3s ease, border-bottom 0.3s ease;}
+.nav.solid{background:rgba(5,3,8,.86);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom: 1px solid rgba(255,255,255,0.05);}
+.nav-in{height:76px;display:flex;align-items:center;gap:20px}
+.brand{display:flex;align-items:center;gap:12px;color:var(--ice);font-weight:600;font-size:16px;letter-spacing: 0.03em;}
+.brand svg{width:28px;height:28px}
+.back{margin-left:auto;display:flex;align-items:center;gap:8px;color:var(--dim);font-size:13px;border:1px solid rgba(244,242,255,.16);border-radius:999px;padding:9px 18px;transition:border-color .2s ease,color .2s ease, background 0.2s ease;}
+.back:hover{color:var(--ice);border-color:rgba(244,242,255,.4); background:rgba(255,255,255,0.05);}
+
+/* ---------- hero ---------- */
+.hero{position:relative;z-index:2;padding:120px 0 60px}
+.eyebrow{display:inline-block;font-size:13px;font-weight:600;letter-spacing:.06em;color:var(--amber);background:rgba(255,184,41,0.1);padding:4px 12px;border-radius:99px;opacity:0;animation:pv-rise .6s cubic-bezier(.22,1,.36,1) .05s forwards}
+.hero h1{margin-top:24px;font-weight:400;color:var(--ice);letter-spacing:-.03em;line-height:1.04;
+  font-size:clamp(2.2rem,5vw,4rem);max-width:18ch;opacity:0;animation:pv-rise .7s cubic-bezier(.22,1,.36,1) .14s forwards}
+.hero p{margin-top:20px;max-width:65ch;font-size:18px;font-weight:300;color:var(--dim);opacity:0;animation:pv-rise .7s cubic-bezier(.22,1,.36,1) .26s forwards}
+.scroll-hint{margin-top:40px;display:flex;align-items:center;gap:14px;font-size:13px;color:var(--dim);
+  opacity:0;animation:pv-rise .7s cubic-bezier(.22,1,.36,1) .36s forwards}
+.scroll-hint i{display:block;width:1px;height:48px;background:linear-gradient(var(--amber),transparent);animation:pv-drip 2.2s ease-in-out infinite}
+@keyframes pv-rise{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:translateY(0); } }
+@keyframes pv-drip{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* ---------- el hilo: rail vertical con un punto por escena ---------- */
+.thread{position:fixed;top:50%;right:32px;transform:translateY(-50%);z-index:15;display:flex;flex-direction:column;align-items:center;gap:0}
+.thread-line{position:absolute;top:14px;bottom:14px;left:50%;width:2px;background:rgba(244,242,255,.08);transform:translateX(-50%); border-radius:2px;}
+.thread-fill{position:absolute;top:14px;left:50%;width:2px;background:linear-gradient(var(--amber),var(--violet));transform:translateX(-50%);height:0%;transition:height .3s ease;border-radius:2px;box-shadow: 0 0 10px var(--violet);}
+.thread-dot{position:relative;z-index:1;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.thread-dot::before{content:"";width:10px;height:10px;border-radius:50%;background:rgba(244,242,255,.2);transition:all .25s cubic-bezier(.22,1,.36,1);box-shadow:0 0 0 0 transparent}
+.thread-dot:hover::before{background:rgba(244,242,255,.8);transform:scale(1.25)}
+.thread-dot.active::before{background:var(--c,var(--amber));transform:scale(1.5);box-shadow:0 0 16px 3px var(--c,var(--amber))}
+.thread-label{position:absolute;right:42px;top:50%;transform:translateY(-50%);white-space:nowrap;font:500 12px/1 var(--font);
+  letter-spacing:.04em;color:var(--ice);background:rgba(12,10,20,.95);border:1px solid rgba(244,242,255,.14);border-radius:6px;
+  padding:8px 12px;opacity:0;pointer-events:none;transition:opacity .2s ease, transform 0.2s ease; transform:translateY(-50%) translateX(10px);}
+.thread-dot:hover .thread-label{opacity:1; transform:translateY(-50%) translateX(0);}
+@media (max-width:900px){ .thread{display:none} }
+
+/* ---------- secciones de escena ---------- */
+.scene-section{position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding-top:60px}
+.scene-head{position:relative;z-index:2;padding:0 var(--pad) 24px;opacity:0;transform:translateY(24px);
+  transition:opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1)}
+.scene-section.in-view .scene-head{opacity:1;transform:translateY(0)}
+.scene-head-in{max-width:1400px;margin:0 auto;display:flex;align-items:baseline;gap:20px;flex-wrap:wrap}
+.scene-head .n{font:600 13px/1 var(--font);letter-spacing:.15em;color:var(--c,var(--amber))}
+.scene-head h2{font-weight:400;font-size:clamp(1.6rem,3.2vw,2.5rem);letter-spacing:-.02em;color:var(--ice)}
+.scene-head p{flex:1 1 350px;font-size:15px;color:var(--dim);max-width:75ch; font-weight:300;}
+.scene-stage{position:relative;height:min(90vh,980px);min-height:500px;margin:0 16px 20px;border-radius:20px;overflow:hidden;
+  border:1px solid rgba(244,242,255,.08);background:var(--panel);
+  opacity:0;transform:translateY(40px) scale(.96);
+  transition:opacity .8s cubic-bezier(.22,1,.36,1) .05s, transform .8s cubic-bezier(.22,1,.36,1) .05s, box-shadow 1s ease .1s}
+.scene-section.in-view .scene-stage{opacity:1;transform:translateY(0) scale(1);
+  box-shadow:0 50px 100px -30px rgba(0,0,0,.8), 0 0 0 1px var(--c,var(--violet)), 0 0 80px -15px var(--c,var(--violet))}
+.scene-stage iframe{width:100%;height:100%;border:0;display:block;background:var(--panel)}
+@media (max-width:860px){
+  .scene-section{padding-top:40px}
+  .scene-stage{margin:0 12px 12px;height:min(80vh,750px)}
+  .scene-head{padding:0 20px 20px}
+}
+
+/* ---------- cierre ---------- */
+.closing{position:relative;z-index:2;padding:80px var(--pad) 100px}
+.closing .band{max-width:1400px;margin:0 auto;border-top:1px dashed rgba(244,242,255,.16);padding-top:40px;
+  display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center}
+.closing p{max-width:55ch;font-size:15px;color:var(--dim);}
+.closing a.ghost{font-size:14px;color:var(--ice);font-weight:500;border-bottom:1px solid rgba(244,242,255,.4);transition:color 0.2s ease, border-color 0.2s ease;}
+.closing a.ghost:hover{color:var(--amber); border-color:var(--amber);}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .eyebrow,.hero h1,.hero p,.scroll-hint{animation:none;opacity:1}
+  .scroll-hint i{animation:none}
+  .scene-head,.scene-stage{transition:none;opacity:1;transform:none}
+}
+</style>
 </head>
 <body>
 
-  <!-- BARRA DE NAVEGACIÓN SUPERIOR CON VIEW TRANSITIONS -->
-  <header class="nav" id="mainNav">
-    <div class="wrap nav-inner">
-      <a class="brand" href="#inicio" data-view="inicio" aria-label="Inicio RAPOT">
-        <div class="brand-orb">
-          <svg viewBox="0 0 34 34" aria-hidden="true">
-            <circle cx="17" cy="17" r="15" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity=".6"/>
-            <circle cx="17" cy="9" r="3" fill="#4fdccc"/>
-            <circle cx="9" cy="21" r="3" fill="#a9e6ff"/>
-            <circle cx="25" cy="21" r="3" fill="#f2dcaa"/>
-          </svg>
-        </div>
-        <span class="brand-text">RAPOT <span class="brand-badge">KENNEDY</span></span>
-      </a>
+<header class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="https://anasoficasca-code.github.io/modelamiento2/v2.html" aria-label="RAPOT">
+      <svg viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="16" fill="none" stroke="#ffb829" stroke-opacity=".5" stroke-width="1.2"/><circle cx="17" cy="9" r="3" fill="#f4f2ff"/><circle cx="10" cy="21" r="3" fill="#f4f2ff"/><circle cx="24" cy="21" r="3" fill="#f4f2ff"/></svg>
+      RAPOT KENNEDY
+    </a>
+    <a class="back" href="https://anasoficasca-code.github.io/modelamiento2/v2.html"><i class="fa-solid fa-arrow-left"></i> Volver al Modelo Completo</a>
+  </div>
+</header>
 
-      <!-- Pestañas de navegación dinámica -->
-      <nav class="nav-links" id="navLinks" aria-label="Vistas principales">
-        <a href="#inicio" class="nav-link active" data-view="inicio">
-          <i class="fa-solid fa-atom"></i> La Esfera
-        </a>
-        <a href="#relaciones" class="nav-link" data-view="relaciones">
-          <i class="fa-solid fa-arrows-split-up-and-left"></i> Relaciones POT
-        </a>
-        <a href="#kennedy" class="nav-link nav-link-highlight" data-view="kennedy">
-          <i class="fa-solid fa-city"></i> Caso Kennedy
-        </a>
-        <a href="#modulos" class="nav-link" data-view="modulos">
-          <i class="fa-solid fa-layer-group"></i> Módulos
-        </a>
-        <a href="#modelo-propio" class="nav-link" data-view="modelo-propio">
-          <i class="fa-solid fa-sliders"></i> Modelo Propio
-        </a>
-      </nav>
+<section class="hero">
+  <canvas id="cloud" aria-hidden="true"></canvas>
+  <div class="wrap" style="position:relative">
+    <p class="eyebrow">TERRITORIO KENNEDY</p>
+    <h1>Un territorio que ya no alcanza a sostener su propio modelo de ocupación.</h1>
+    <p>Cuatro lecturas del mismo lugar, cada una desde su propio corte axonométrico. Baja para recorrerlas a pantalla completa y descubre la red dinámica de flujos.</p>
+    <div class="scroll-hint"><i aria-hidden="true"></i>Baja para recorrer las escenas</div>
+  </div>
+</section>
 
-      <div class="nav-actions">
-        <!-- Alternador de sonido FX sutil -->
-        <button type="button" class="btn-icon" id="btnAudioToggle" title="Activar/Silenciar efectos de sonido hápticos" aria-label="Sonido">
-          <i class="fa-solid fa-volume-xmark"></i>
-        </button>
-        <a href="#kennedy" class="btn-aurora" data-view="kennedy">
-          <span>Explorar Kennedy</span>
-          <i class="fa-solid fa-arrow-right"></i>
-        </a>
-      </div>
-    </div>
-  </header>
+<main id="scenes"></main>
 
-  <!-- CONTENEDOR PRINCIPAL DE VISTAS DINÁMICAS (SPA) -->
-  <main id="appContainer">
+<nav class="thread" id="thread" aria-label="Escenas">
+  <span class="thread-line"></span>
+  <span class="thread-fill" id="threadFill"></span>
+</nav>
 
-    <!-- ========================================== -->
-    <!-- VISTA 1: HERO & ESFERA 3D INTERACTIVA     -->
-    <!-- ========================================== -->
-    <section class="view-panel active" id="view-inicio">
-      <div class="scene">
-        <!-- Columna de historia interactiva -->
-        <div class="story">
-          <div class="step hero" data-step="0">
-            <span class="eyebrow"><i class="fa-solid fa-dna"></i> INGENIERÍA INVERSA AL MODELO OFICIAL</span>
-            <h1>Una ciudad que <span class="text-aurora">no cabe</span> en el POT.</h1>
-            <p class="lead">
-              Reconstruimos el modelo de ciudad que propone el POT de Bogotá a partir de sus 38 componentes,
-              la forma en que los descompone en 4 estructuras y los desequilibrios reales que oculta la norma.
-            </p>
+<section class="closing">
+  <div class="band">
+    <p>Estas cuatro escenas comparten el mismo territorio real de Kennedy — lo que cambia es el corte con el que se mira y la red de dependencias ocultas que lo configuran.</p>
+    <a class="ghost" href="https://anasoficasca-code.github.io/modelamiento2/v2.html#modulos">Ver el resto de los módulos <i class="fa-solid fa-arrow-right"></i></a>
+  </div>
+</section>
 
-            <div class="hero-stats-banner">
-              <div class="stat-box">
-                <span class="stat-num" data-counter="38">38</span>
-                <span class="stat-label">Componentes oficiales</span>
-              </div>
-              <div class="stat-box">
-                <span class="stat-num" data-counter="4">4</span>
-                <span class="stat-label">Estructuras</span>
-              </div>
-              <div class="stat-box">
-                <span class="stat-num" data-counter="6">6</span>
-                <span class="stat-label">Relaciones explícitas</span>
-              </div>
-            </div>
+<script>
+(function(){
+'use strict';
 
-            <!-- Selector de fases de la esfera -->
-            <div class="orb-phase-controller">
-              <span class="phase-title">Fases del análisis:</span>
-              <div class="phase-buttons">
-                <button type="button" class="phase-btn active" data-phase="0">
-                  <span class="phase-num">0</span> Toda la Ciudad
-                </button>
-                <button type="button" class="phase-btn" data-phase="1">
-                  <span class="phase-num">1</span> Descompone
-                </button>
-                <button type="button" class="phase-btn" data-phase="2">
-                  <span class="phase-num">2</span> Organiza
-                </button>
-                <button type="button" class="phase-btn" data-phase="3">
-                  <span class="phase-num">3</span> Prioriza
-                </button>
-              </div>
-            </div>
+// 1. Array de escenas dinámicas. 
+// Las primeras 3 vienen de modelamiento2 (axonometrías originales).
+// La 4ª apunta a nuestro nuevo "network.html" local y ultra-ligero.
+var SCENES = [
+  { c:'#8052ff', n:'01', t:'Simulación 3D de tránsito', href:'https://anasoficasca-code.github.io/modelamiento2/modulo-08-3d.html',
+    d:'El flujo vehicular corriendo en vivo sobre la malla vial real de Kennedy — arrastra para girar, rueda para zoom.' },
+  { c:'#ffb829', n:'02', t:'Corte axonométrico', href:'https://anasoficasca-code.github.io/modelamiento2/modulo-10-corte.html',
+    d:'Seis límites móviles: mueve cualquiera y el modelo del territorio se corta al instante para revelar lo que hay debajo.' },
+  { c:'#4fdccc', n:'03', t:'Problemáticas de Kennedy', href:'https://anasoficasca-code.github.io/modelamiento2/modulo-12-problemas.html',
+    d:'La red causal completa sobre el mapa 3D real: cada burbuja es una causa, cada flecha una relación del POT en Kennedy.' },
+  { c:'#ff4d82', n:'04', t:'Colapso operativo y logístico (Red Dinámica)', href:'network.html',
+    d:'Nueva visualización de la red: Nodos interactivos y flujos directos/indirectos. Destaca los Hubs y calcula los Nodos Puente que sostienen el sistema.' }
+];
 
-            <div class="actions">
-              <button type="button" class="btn-kelp" id="btnNextPhase">
-                <span>Siguiente paso de la esfera</span>
-                <i class="fa-solid fa-play"></i>
-              </button>
-              <a href="#kennedy" class="link-quiet" data-view="kennedy">Ir directo a Kennedy →</a>
-            </div>
-          </div>
+/* ================= construir las secciones y el hilo ================= */
+var scenesEl = document.getElementById('scenes');
+var threadEl = document.getElementById('thread');
+var threadHtml = '<span class="thread-line"></span><span class="thread-fill" id="threadFill"></span>';
+var scenesHtml = '';
 
-          <!-- Pasos explicativos enlazados a la esfera -->
-          <div class="step-card" id="stepExplain">
-            <div class="step-badge" id="stepBadge">Fase 0 de 3</div>
-            <h3 id="stepTitle">Bogotá integrada como un solo sistema</h3>
-            <p id="stepDesc">
-              Gira la esfera 3D arrastrando con el cursor o el dedo. Cada partícula representa un elemento del territorio que el POT reconoce.
-            </p>
-            <div class="structure-legend" id="orbLegend"></div>
-          </div>
-        </div>
+SCENES.forEach(function(s, i){
+  var id = 'sc-'+i;
+  // Panel de escena
+  scenesHtml += '<section class="scene-section" id="'+id+'" style="--c:'+s.c+'">'+
+    '<div class="scene-head"><div class="scene-head-in">'+
+    '<span class="n">'+s.n+'</span><h2>'+s.t+'</h2><p>'+s.d+'</p>'+
+    '</div></div>'+
+    '<div class="scene-stage"><iframe data-src="'+s.href+'" title="'+s.t+'" loading="lazy"></iframe></div>'+
+    '</section>';
+  
+  // Punto en el hilo de navegación lateral
+  threadHtml += '<a href="#'+id+'" class="thread-dot" data-idx="'+i+'" style="--c:'+s.c+'" aria-label="Escena '+s.n+'">'+
+    '<span class="thread-label">'+s.t+'</span></a>';
+});
 
-        <!-- Columna de la Esfera 3D Interactiva -->
-        <div class="stage">
-          <div class="orb-viewport">
-            <canvas id="orbCanvas"></canvas>
-            <div class="orb-hint">
-              <i class="fa-solid fa-hand-pointer"></i> Arrastra para rotar en 3D · Pasa el cursor sobre los componentes
-            </div>
-            <!-- Tooltip flotante de componente -->
-            <div class="orb-tooltip" id="orbTooltip">
-              <strong id="tipName">Componente</strong>
-              <span id="tipStruct">Estructura</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+scenesEl.innerHTML = scenesHtml;
+threadEl.innerHTML = threadHtml;
 
-    <!-- ========================================== -->
-    <!-- VISTA 2: RELACIONES DEL POT Y CITAS       -->
-    <!-- ========================================== -->
-    <section class="view-panel" id="view-relaciones">
-      <div class="wrap section-pad">
-        <div class="sec-head">
-          <div>
-            <span class="eyebrow"><i class="fa-solid fa-quote-left"></i> EVIDENCIA TEXTUAL VERBATIM</span>
-            <h2>Seis relaciones, en palabras del plan</h2>
-          </div>
-          <p>
-            Ninguna conexión está inventada: cada flecha que cose el modelo surge de una frase literal extraída del documento
-            del POT "Bogotá Reverdece 2022-2035". Aquí puedes filtrar y contrastar la evidencia.
-          </p>
-        </div>
+/* ================= intersection observer para revelar & cargar iframes ================= */
+var sections = [].slice.call(document.querySelectorAll('.scene-section'));
+var dots = [].slice.call(document.querySelectorAll('.thread-dot'));
+var threadFill = document.getElementById('threadFill');
+var activeIdx = -1;
 
-        <!-- Filtros de relaciones -->
-        <div class="rel-filter-bar">
-          <button type="button" class="filter-chip active" data-rel-filter="all">Todas las 6 relaciones</button>
-          <button type="button" class="filter-chip" data-rel-filter="eep">Involucra Ecológica (EEP)</button>
-          <button type="button" class="filter-chip" data-rel-filter="efc">Involucra Cuidado (EFC)</button>
-          <button type="button" class="filter-chip" data-rel-filter="eseci">Involucra Socioeconómica (ESECI)</button>
-          <button type="button" class="filter-chip" data-rel-filter="eip">Involucra Patrimonios (EIP)</button>
-        </div>
+var obs = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    var el = e.target;
+    if (e.isIntersecting){
+      el.classList.add('in-view');
+      // Lazy load del iframe
+      var iframe = el.querySelector('iframe');
+      if (iframe && !iframe.src) {
+        iframe.src = iframe.getAttribute('data-src');
+      }
+    }
+  });
+}, { threshold: [0, 0.15, 0.4, 1] });
 
-        <!-- Tarjetas dinámicas de relaciones -->
-        <div class="rels-grid" id="relsGrid"></div>
+sections.forEach(function(sec){ obs.observe(sec); });
 
-        <!-- Revelación crítica -->
-        <div class="callout-box">
-          <div class="callout-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
-          <div class="callout-content">
-            <h4>Hallazgo crítico de ingeniería inversa</h4>
-            <p>
-              Tres de las seis relaciones salen de la <strong>Estructura Integradora de Patrimonios</strong> y tres llegan a la
-              <strong>Estructura Socioeconómica</strong>. Sin embargo, la Estructura Socioeconómica <em>recibe de todas pero no emite ninguna relación de reciprocidad</em>.
-              El POT modela la economía como un receptor de beneficios pero no le exige devolver resiliencia al sistema ambiental ni al cuidado.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
+/* ================= scroll & hilo de navegación ================= */
+var nav = document.getElementById('nav');
 
-    <!-- ========================================== -->
-    <!-- VISTA 3: CASO KENNEDY (SIMULACIÓN VIVA)   -->
-    <!-- ========================================== -->
-    <section class="view-panel" id="view-kennedy">
-      <div class="wrap section-pad">
-        <div class="sec-head">
-          <div>
-            <span class="eyebrow text-gold"><i class="fa-solid fa-location-dot"></i> TERRITORIO PRIORITARIO EN MODELAMIENTO</span>
-            <h2>Kennedy: La ciudad real frente al plano</h2>
-          </div>
-          <p>
-            Kennedy es el laboratorio donde colapsan las suposiciones estáticas del POT. Con más de 1.2 millones de habitantes,
-            la central de abastos más grande del país y dos humedales en crisis, aquí puedes interactuar con tres simuladores dinámicos.
-          </p>
-        </div>
+function onScroll(){
+  var scrollY = window.scrollY;
+  var wh = window.innerHeight;
+  nav.classList.toggle('solid', scrollY > 40);
 
-        <!-- Selector de simulaciones de Kennedy -->
-        <div class="kennedy-tabs">
-          <button type="button" class="ktab active" data-ktab="corabastos">
-            <i class="fa-solid fa-truck-ramp-box"></i>
-            <div>
-              <strong>1. Corabastos y Flujos</strong>
-              <small>Logística, sobrecarga y residuos</small>
-            </div>
-          </button>
-          <button type="button" class="ktab" data-ktab="acustica">
-            <i class="fa-solid fa-volume-high"></i>
-            <div>
-              <strong>2. Ruido vs. Fauna</strong>
-              <small>Humedales El Burro y La Vaca</small>
-            </div>
-          </button>
-          <button type="button" class="ktab" data-ktab="causal">
-            <i class="fa-solid fa-diagram-project"></i>
-            <div>
-              <strong>3. Red Causal de Sobrecarga</strong>
-              <small>Bucles de realimentación sistémica</small>
-            </div>
-          </button>
-        </div>
+  // Determinar qué sección está activa (la que domina la pantalla)
+  var mid = scrollY + wh * 0.6;
+  var found = -1;
+  sections.forEach(function(sec, i){
+    var top = sec.offsetTop, bottom = top + sec.offsetHeight;
+    if (mid >= top && mid <= bottom) found = i;
+  });
+  
+  if (found === -1 && scrollY < wh*0.5) found = 0; // Hero area = focus scene 0
+  if (found !== activeIdx && found >= 0) {
+    activeIdx = found;
+    dots.forEach(function(d, i){ d.classList.toggle('active', i === activeIdx); });
+    
+    // Animar la línea de progreso
+    if (dots.length > 1) {
+      var pct = (activeIdx / (dots.length - 1)) * 100;
+      threadFill.style.height = pct + '%';
+    }
+  }
+}
+window.addEventListener('scroll', onScroll, {passive:true});
+window.addEventListener('resize', onScroll, {passive:true});
+onScroll();
 
-        <!-- SUB-PANEL 1: CORABASTOS -->
-        <div class="kpanel active" id="kpanel-corabastos">
-          <div class="kpanel-grid">
-            <div class="kpanel-canvas-wrap">
-              <div class="kpanel-header">
-                <span><i class="fa-solid fa-satellite"></i> Visualizador Dinámico de Cargas · Corabastos</span>
-                <span class="status-live">● EN VIVO</span>
-              </div>
-              <canvas id="corabastosCanvas" width="800" height="480"></canvas>
-              <div class="corabastos-controls">
-                <button type="button" class="c-time-btn active" data-shift="madrugada">02:00 AM (Cargue pesado)</button>
-                <button type="button" class="c-time-btn" data-shift="manana">08:00 AM (Distribución y compras)</button>
-                <button type="button" class="c-time-btn" data-shift="tarde">02:00 PM (Saturación y residuos)</button>
-              </div>
-            </div>
-            <div class="kpanel-sidebar">
-              <h3>El colapso metabólico de Corabastos</h3>
-              <p>
-                El POT clasifica a Corabastos simplemente como un equipamiento de abastecimiento (ESECI). No modela los 12.000 camiones diarios,
-                las 75 toneladas de desechos orgánicos en descomposición ni la congestión que bloquea el eje Tintal–Américas.
-              </p>
-              <div class="metric-meter">
-                <div class="meter-label">
-                  <span>Saturación de vías perimetrales</span>
-                  <strong id="metricSat">88%</strong>
-                </div>
-                <div class="meter-bar"><div class="meter-fill fill-warn" id="fillSat" style="width:88%"></div></div>
-              </div>
-              <div class="metric-meter">
-                <div class="meter-label">
-                  <span>Acumulación de residuos en espacio público</span>
-                  <strong id="metricRes">65 Ton/día</strong>
-                </div>
-                <div class="meter-bar"><div class="meter-fill fill-danger" id="fillRes" style="width:75%"></div></div>
-              </div>
-              <div class="kpanel-quote">
-                &ldquo;El plano fija un polígono para el mercado, pero el flujo real desborda 4 kilómetros a la redonda y asfixia a la comunidad.&rdquo;
-              </div>
-            </div>
-          </div>
-        </div>
+/* ================= animación atmosférica (nube de puntos) ================= */
+var canvas = document.getElementById('cloud');
+if (canvas) {
+  var ctx = canvas.getContext('2d');
+  var W, H, dpr;
+  var pts = [];
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  
+  function resizeCloud(){
+    var r = canvas.getBoundingClientRect();
+    dpr = Math.min(window.devicePixelRatio||1, 2);
+    W = r.width; H = r.height;
+    canvas.width = W*dpr; canvas.height = H*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  window.addEventListener('resize', resizeCloud);
+  resizeCloud();
 
-        <!-- SUB-PANEL 2: RUIDO Y HUMEDALES -->
-        <div class="kpanel" id="kpanel-acustica">
-          <div class="kpanel-grid">
-            <div class="kpanel-canvas-wrap">
-              <div class="kpanel-header">
-                <span><i class="fa-solid fa-wave-square"></i> Dispersión Acústica vs. Aves y Fauna en Humedales</span>
-              </div>
-              <canvas id="acusticaCanvas" width="800" height="480"></canvas>
-              <div class="slider-row">
-                <label for="noiseSlider"><i class="fa-solid fa-volume-high"></i> Nivel de Tráfico Vehicular (Av. Cali / Av. Américas):</label>
-                <input type="range" id="noiseSlider" min="45" max="95" value="78" step="1">
-                <span class="slider-val" id="noiseVal">78 dB</span>
-              </div>
-            </div>
-            <div class="kpanel-sidebar">
-              <h3>La barrera invisible del sonido</h3>
-              <p>
-                Los humedales <strong>El Burro</strong> y <strong>La Vaca</strong> están seccionados por la Av. Ciudad de Cali y la Av. Américas.
-                El POT los declara reserva ambiental protegida, pero tolera niveles de ruido superiores a 75 dB que ahuyentan especies endémicas
-                (como la Tingua Bogotana) y desintegran los corredores ecológicos.
-              </p>
-              <div class="metric-meter">
-                <div class="meter-label">
-                  <span>Estrés bioacústico en el humedal</span>
-                  <strong id="faunaStress">Crítico (Alto)</strong>
-                </div>
-                <div class="meter-bar"><div class="meter-fill fill-danger" id="fillStress" style="width:82%"></div></div>
-              </div>
-              <div class="metric-meter">
-                <div class="meter-label">
-                  <span>Índice de permanencia de aves</span>
-                  <strong id="faunaIndex">32%</strong>
-                </div>
-                <div class="meter-bar"><div class="meter-fill fill-warn" id="fillIndex" style="width:32%"></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
+  for(var i=0;i<(reduce?30:70);i++) {
+    pts.push({
+      x: Math.random()*100, y: Math.random()*100,
+      s: Math.random()*1.5 + 0.5,
+      vx: (Math.random()-0.5)*0.1, vy: (Math.random()-0.5)*0.1,
+      a: Math.random()*Math.PI*2
+    });
+  }
 
-        <!-- SUB-PANEL 3: RED CAUSAL -->
-        <div class="kpanel" id="kpanel-causal">
-          <div class="causal-wrap">
-            <div class="causal-header">
-              <h3>Red Causal Dinámica: El bucle de sobrecarga en Kennedy</h3>
-              <p>Pasa el cursor sobre cada nodo para seguir las cadenas causales de realimentación y observar cómo se transmiten los impactos.</p>
-            </div>
-            <div class="causal-board" id="causalBoard"></div>
-          </div>
-        </div>
+  function frame(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle = 'rgba(244,242,255,0.15)';
+    pts.forEach(function(p){
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = 100; if (p.x > 100) p.x = 0;
+      if (p.y < 0) p.y = 100; if (p.y > 100) p.y = 0;
+      var px = W * (p.x/100);
+      var py = H * (p.y/100);
+      var op = 0.4 + 0.3 * Math.sin(Date.now()*0.001 + p.a);
+      ctx.globalAlpha = op;
+      ctx.beginPath();
+      ctx.arc(px, py, p.s, 0, Math.PI*2);
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+    if(!reduce) requestAnimationFrame(frame);
+  }
+  if(!reduce) requestAnimationFrame(frame); else frame();
+}
 
-      </div>
-    </section>
-
-    <!-- ========================================== -->
-    <!-- VISTA 4: MÓDULOS DE RAPOT                 -->
-    <!-- ========================================== -->
-    <section class="view-panel" id="view-modulos">
-      <div class="wrap section-pad">
-        <div class="sec-head">
-          <div>
-            <span class="eyebrow"><i class="fa-solid fa-cubes"></i> ECOSISTEMA DE MODELAMIENTO</span>
-            <h2>Los módulos de investigación</h2>
-          </div>
-          <p>
-            Del inventario de normas a la formulación de modelos dinámicos propios. Navega directamente a cada uno de los módulos
-            desarrollados por el equipo de ingeniería inversa.
-          </p>
-        </div>
-
-        <div class="mod-groups-container" id="modGroups"></div>
-      </div>
-    </section>
-
-    <!-- ========================================== -->
-    <!-- VISTA 5: MODELO PROPIO (SISTEMA DE CUIDADO)-->
-    <!-- ========================================== -->
-    <section class="view-panel" id="view-modelo-propio">
-      <div class="wrap section-pad">
-        <div class="sec-head">
-          <div>
-            <span class="eyebrow text-aurora"><i class="fa-solid fa-heart-pulse"></i> HIPÓTESIS ALTERNATIVA</span>
-            <h2>La ciudad como sistema de cuidado mutuo</h2>
-          </div>
-          <p>
-            Frente al POT reduccionista proponemos un modelo dinámico donde la ciudad equilibra sus cuatro dimensiones.
-            Ajusta las intensidades y observa cómo la arquitectura relacional se autorregula.
-          </p>
-        </div>
-
-        <div class="propio-grid">
-          <div class="sliders-card">
-            <h3>Intensidades del Sistema</h3>
-            <div class="prop-slider-group">
-              <div class="prop-slider-header">
-                <span style="color:#4fdccc"><i class="fa-solid fa-leaf"></i> 1. Estructura Ecológica</span>
-                <strong id="valEep">75%</strong>
-              </div>
-              <input type="range" class="prop-range range-eep" id="rangeEep" min="10" max="100" value="75">
-            </div>
-
-            <div class="prop-slider-group">
-              <div class="prop-slider-header">
-                <span style="color:#a9e6ff"><i class="fa-solid fa-people-roof"></i> 2. Redes de Cuidado y Salud</span>
-                <strong id="valEfc">85%</strong>
-              </div>
-              <input type="range" class="prop-range range-efc" id="rangeEfc" min="10" max="100" value="85">
-            </div>
-
-            <div class="prop-slider-group">
-              <div class="prop-slider-header">
-                <span style="color:#f2dcaa"><i class="fa-solid fa-hand-holding-dollar"></i> 3. Economía Circular</span>
-                <strong id="valEseci">60%</strong>
-              </div>
-              <input type="range" class="prop-range range-eseci" id="rangeEseci" min="10" max="100" value="60">
-            </div>
-
-            <div class="prop-slider-group">
-              <div class="prop-slider-header">
-                <span style="color:#f1b9ff"><i class="fa-solid fa-landmark-dome"></i> 4. Patrimonio Comunitario</span>
-                <strong id="valEip">70%</strong>
-              </div>
-              <input type="range" class="prop-range range-eip" id="rangeEip" min="10" max="100" value="70">
-            </div>
-
-            <div class="prop-actions">
-              <button type="button" class="btn-aurora" id="btnEquilibrar">
-                <i class="fa-solid fa-wand-magic-sparkles"></i> Equilibrar automáticamente
-              </button>
-            </div>
-          </div>
-
-          <div class="radar-card">
-            <h3>Respuesta Sistémica Emergente</h3>
-            <canvas id="propioRadar" width="450" height="380"></canvas>
-            <div class="radar-kpis">
-              <div class="rkpi">
-                <span class="rkpi-val" id="kpiResiliencia">82%</span>
-                <span class="rkpi-lbl">Resiliencia Climática</span>
-              </div>
-              <div class="rkpi">
-                <span class="rkpi-val" id="kpiEquidad">78%</span>
-                <span class="rkpi-lbl">Equidad Territorial</span>
-              </div>
-              <div class="rkpi">
-                <span class="rkpi-val" id="kpiConectividad">88%</span>
-                <span class="rkpi-lbl">Conectividad Urbana</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- PIE DE PÁGINA ELEGANTE -->
-  <footer class="footer">
-    <div class="wrap footer-inner">
-      <div class="footer-col">
-        <span class="footer-title">RAPOT · Caso Kennedy</span>
-        <p>Ingeniería inversa al Plan de Ordenamiento Territorial de Bogotá (Decreto 555 de 2021). Código abierto y ligero.</p>
-      </div>
-      <div class="footer-links">
-        <a href="https://github.com/anasoficasca-code/Kennedy" target="_blank" rel="noopener">
-          <i class="fa-brands fa-github"></i> Repositorio GitHub
-        </a>
-        <a href="https://anasoficasca-code.github.io/modelamiento2/v2.html" target="_blank" rel="noopener">
-          <i class="fa-solid fa-arrow-up-right-from-square"></i> Versión v2 original
-        </a>
-      </div>
-    </div>
-  </footer>
-
-  <!-- Scripts modulares -->
-  <script src="orb.js"></script>
-  <script src="kennedy.js"></script>
-  <script src="app.js"></script>
+})();
+</script>
 </body>
 </html>
