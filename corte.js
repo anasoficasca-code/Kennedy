@@ -4,13 +4,13 @@
 // (assets/kennedy_net.json y assets/kennedy_vehiculos.json).
 // =====================================================================
 (() => {
-  const NET_URL = "./assets/kennedy_net.json";
-  const VEHICULOS_JSON_URL = "./assets/kennedy_vehiculos.json";
-  const BUILDINGS_URL = "./assets/kennedy_buildings.json";
-  const TREES_URL = "./assets/kennedy_trees_real.json";
-  const WATER_URL = "./assets/kennedy_water_bodies.json";
-  const MANZANAS_URL = "./assets/kennedy_manzanas.json";
-  const PARQUES_URL = "./assets/kennedy_parques.json";
+  const NET_URL = "https://anasoficasca-code.github.io/modelamiento2/assets/kennedy_net.json";
+  const VEHICULOS_JSON_URL = "https://anasoficasca-code.github.io/modelamiento2/assets/kennedy_vehiculos.json";
+  const BUILDINGS_URL = "https://anasoficasca-code.github.io/modelamiento2/assets/kennedy_buildings.json";
+  const TREES_URL = "https://anasoficasca-code.github.io/modelamiento2/assets/kennedy_trees_real.json";
+  const WATER_URL = "https://anasoficasca-code.github.io/modelamiento2/assets/kennedy_water_bodies.json";
+  const MANZANAS_URL = "https://anasoficasca-code.github.io/modelamiento2/assets/kennedy_manzanas.json";
+  const PARQUES_URL = "https://anasoficasca-code.github.io/modelamiento2/assets/kennedy_parques.json";
   const SCALE = 1 / 10; // las coordenadas del JSON llegan a ~10700 unidades; se escalan para Three.js
 
   const statusOverlay = document.getElementById("statusOverlay");
