@@ -5806,6 +5806,47 @@
 
 // --- ADDED FOR MASTER SEQUENCE (mod2.html) ---
 
+
+window.setCustomCut = function(rot, x1, x2, z1, z2, y1, y2, cx, cy, cz, tx, ty, tz, zoom) {
+    document.getElementById('secRot').value = rot;
+    document.getElementById('secXMin').value = x1;
+    document.getElementById('secXMax').value = x2;
+    document.getElementById('secZMin').value = z1;
+    document.getElementById('secZMax').value = z2;
+    document.getElementById('secYMin').value = y1;
+    document.getElementById('secYMax').value = y2;
+    ['secRot','secXMin','secXMax','secZMin','secZMax','secYMin','secYMax'].forEach(id => {
+        document.getElementById(id).dispatchEvent(new Event('input'));
+    });
+    
+    // Configurar cmara
+    camera.position.set(cx, cy, cz);
+    controls.target.set(tx, ty, tz);
+    camera.zoom = zoom;
+    camera.updateProjectionMatrix();
+    controls.update();
+
+    // Habilitar seccin visible (por si estaba oculta)
+    document.getElementById('legendPanel').style.display = 'block';
+    document.getElementById('sectionWrap').style.display = 'block';
+};
+
+
+window.thickenLines = function() {
+    // Traverse the scene and set linewidth = 2 for LineBasicMaterial
+    scene.traverse((child) => {
+        if (child.isLineSegments || child.isLine) {
+            if (child.material) {
+                child.material.linewidth = 3;
+                child.material.color.setHex(0x000000);
+                child.material.opacity = 1;
+                child.material.transparent = false;
+                child.material.needsUpdate = true;
+            }
+        }
+    });
+};
+
 window.takeSnapshotsAndStart = function() {
     const origRoadColor = roadMat ? roadMat.color.getHex() : null;
     const origNoiseVis = noiseMesh ? noiseMesh.visible : false;
