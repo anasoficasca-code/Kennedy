@@ -45,20 +45,33 @@
     transition: width 0.2s, height 0.2s, background 0.2s;
   }
 
-  /* --- BACKGROUND FX --- */
+  /* --- BACKGROUND FX & MAP --- */
+  .bg-map-container {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2;
+    opacity: 0.15; pointer-events: none;
+    filter: sepia(1) hue-rotate(220deg) saturate(3) brightness(0.4) contrast(1.2);
+    transform: scale(1.05);
+  }
+  .bg-map-container iframe { width: 100%; height: 100%; border: none; }
+
   canvas#bg-canvas {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    z-index: 0; opacity: 0.6; pointer-events: none;
+    z-index: -1; opacity: 0.8; pointer-events: none;
   }
 
   .huge-text {
     position: fixed;
-    top: 50%; left: 50%; transform: translate(-50%, -50%);
-    font-size: 22vw; font-weight: 900;
+    top: 50%; left: 0; transform: translateY(-50%);
+    font-size: 25vw; font-weight: 900;
     color: transparent;
-    -webkit-text-stroke: 2px rgba(255,255,255,0.03);
-    z-index: 0; pointer-events: none; white-space: nowrap;
-    letter-spacing: -0.05em;
+    -webkit-text-stroke: 2px rgba(255,255,255,0.04);
+    z-index: -1; pointer-events: none; white-space: nowrap;
+    letter-spacing: -0.02em;
+    animation: marqueeText 40s linear infinite alternate;
+  }
+  @keyframes marqueeText {
+    0% { transform: translate(-5%, -50%); }
+    100% { transform: translate(-30%, -50%); }
   }
 
   /* --- LAYOUT --- */
@@ -70,26 +83,36 @@
     max-width: 1400px; margin: 0 auto;
   }
 
-  header { margin-bottom: 80px; animation: fadeDown 1s ease forwards; }
+  header { margin-bottom: 80px; }
   
   .badge {
     display: inline-block; padding: 6px 16px; border-radius: 50px;
-    background: rgba(255, 184, 41, 0.1); border: 1px solid rgba(255, 184, 41, 0.3);
+    background: rgba(255, 184, 41, 0.15); border: 1px solid rgba(255, 184, 41, 0.4);
     color: var(--c2); font-size: 13px; font-weight: 700; letter-spacing: 0.1em;
     margin-bottom: 24px; text-transform: uppercase;
+    animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    opacity: 0; transform: scale(0.8);
   }
+  @keyframes popIn { to { opacity: 1; transform: scale(1); } }
 
   h1.title {
     font-size: clamp(3rem, 6vw, 5rem);
     font-weight: 700; letter-spacing: -0.04em; line-height: 1;
     margin-bottom: 24px;
-    background: linear-gradient(to right, #fff, #a0a0a0);
+    background: linear-gradient(to right, #fff 20%, #8052ff 80%);
     -webkit-background-clip: text; color: transparent;
+    /* Efecto aparición de texto */
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+    animation: slideUpTitle 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    opacity: 0; transform: translateY(40px);
   }
+  @keyframes slideUpTitle { to { opacity: 1; transform: translateY(0); } }
   
   p.subtitle {
-    font-size: 20px; font-weight: 300; color: #9a93ad;
+    font-size: 20px; font-weight: 300; color: #b2a8cc;
     max-width: 600px; line-height: 1.5;
+    opacity: 0; transform: translateY(20px);
+    animation: slideUpTitle 1s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
   }
 
   /* --- BENTO GRID (Las Tarjetas) --- */
@@ -194,6 +217,9 @@
 <div class="cursor-outline" id="c-out"></div>
 
 <!-- Background Elements -->
+<div class="bg-map-container">
+  <iframe src="https://anasoficasca-code.github.io/modelamiento2/modulo-08-3d.html?embed=1"></iframe>
+</div>
 <div class="huge-text">KENNEDY</div>
 <canvas id="bg-canvas"></canvas>
 
