@@ -5803,11 +5803,9 @@
     window.addEventListener("pointerup", () => { dragPt = null; });
   })();
 
-})();
-
-
 
 // --- ADDED FOR MASTER SEQUENCE (mod2.html) ---
+
 window.takeSnapshotsAndStart = function() {
     const origRoadColor = roadMat ? roadMat.color.getHex() : null;
     const origNoiseVis = noiseMesh ? noiseMesh.visible : false;
@@ -5881,3 +5879,5 @@ window.addEventListener('click', (e) => {
         window.parent.advanceMasterSequence();
     }
 });
+
+})();

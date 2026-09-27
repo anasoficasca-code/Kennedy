@@ -278,6 +278,11 @@
       document.getElementById('corte-title').innerText = d.sub;
     };
 
+    // Agregar evento global en el documento padre para que cualquier clic avance la secuencia
+    document.body.addEventListener('click', () => {
+      window.advanceMasterSequence();
+    });
+
     function injectHacks(iframe) {
       try {
         const doc = iframe.contentWindow.document;
