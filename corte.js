@@ -339,7 +339,7 @@
     ribbonGeo.setAttribute("position", new THREE.Float32BufferAttribute(ribbonPos, 3));
     ribbonGeo.setAttribute("uv", new THREE.Float32BufferAttribute(ribbonUv, 2));
     ribbonGeo.computeVertexNormals();
-    const viaTex = new THREE.TextureLoader().load("https://anasoficasca-code.github.io/modelamiento2/assets/textura_via.jpg");
+    const viaTex = new THREE.TextureLoader().setCrossOrigin('anonymous').load("https://anasoficasca-code.github.io/modelamiento2/assets/textura_via.jpg");
     viaTex.wrapS = THREE.RepeatWrapping;
     viaTex.wrapT = THREE.RepeatWrapping;
     const ribbonMat = new THREE.MeshStandardMaterial({ clippingPlanes: sectionClipPlanesArr,
@@ -531,7 +531,7 @@
   let treeInstanceData = null; // {x,z,w,h} por instancia, para recalcular el billboard al girar la camara
   let treeMesh = null;
   function buildTrees(trees) {
-    const treeTex = new THREE.TextureLoader().load("https://anasoficasca-code.github.io/modelamiento2/assets/arbol_real4.png");
+    const treeTex = new THREE.TextureLoader().setCrossOrigin('anonymous').load("https://anasoficasca-code.github.io/modelamiento2/assets/arbol_real4.png");
     // Tarjeta plana (billboard) con la foto real completa (ya incluye
     // tronco y copa) — se pidio que se vea igual que la foto, no un
     // volumen 3D armado con esfera+cilindro por separado.
@@ -986,7 +986,7 @@
     geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
     geo.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
     geo.computeVertexNormals();
-    const waterTex = new THREE.TextureLoader().load("https://anasoficasca-code.github.io/modelamiento2/assets/textura_agua2.jpg");
+    const waterTex = new THREE.TextureLoader().setCrossOrigin('anonymous').load("https://anasoficasca-code.github.io/modelamiento2/assets/textura_agua2.jpg");
     waterTex.wrapS = THREE.RepeatWrapping;
     waterTex.wrapT = THREE.RepeatWrapping;
     waterTexRef = waterTex;
@@ -997,7 +997,7 @@
     // "plana"/pintada, no renderizada. Se anima a una velocidad y escala
     // DISTINTA a la capa de color, para que el patron no se repita igual
     // y parezca mas organico (dos capas de oleaje superpuestas).
-    const bumpTex = new THREE.TextureLoader().load("https://anasoficasca-code.github.io/modelamiento2/assets/textura_agua2.jpg");
+    const bumpTex = new THREE.TextureLoader().setCrossOrigin('anonymous').load("https://anasoficasca-code.github.io/modelamiento2/assets/textura_agua2.jpg");
     bumpTex.wrapS = THREE.RepeatWrapping;
     bumpTex.wrapT = THREE.RepeatWrapping;
     bumpTex.repeat.set(2.3, 2.3);
@@ -1079,7 +1079,7 @@
     geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
     geo.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
     geo.computeVertexNormals();
-    const pastoTex = new THREE.TextureLoader().load("https://anasoficasca-code.github.io/modelamiento2/assets/textura_pasto.jpg");
+    const pastoTex = new THREE.TextureLoader().setCrossOrigin('anonymous').load("https://anasoficasca-code.github.io/modelamiento2/assets/textura_pasto.jpg");
     pastoTex.wrapS = THREE.RepeatWrapping;
     pastoTex.wrapT = THREE.RepeatWrapping;
     const mat = new THREE.MeshStandardMaterial({ clippingPlanes: sectionClipPlanesArr, map: pastoTex, color: 0xadaa90, roughness: 0.95, transparent: true, opacity: 0.6, side: THREE.DoubleSide });
@@ -2026,7 +2026,7 @@
     if (vehInstanced) { vehInstanced.visible = false; vehInstanced.count = 0; }
     if (roadMat) roadMat.color.set(0x9099a3);
     renderer.render(scene, camera);
-    const fotoNatural = renderer.domElement.toDataURL("image/png");
+    const fotoNatural = renderer.domElement.toDataURL("image/webp");
 
     // 2. Escala Cultural: con vehículos y dinámicas urbanas
     if (vehInstanced) {
@@ -2036,13 +2036,13 @@
     }
     if (roadMat) roadMat.color.set(0x7a838d);
     renderer.render(scene, camera);
-    const fotoCultural = renderer.domElement.toDataURL("image/png");
+    const fotoCultural = renderer.domElement.toDataURL("image/webp");
 
     // 3. Escala Tecnológica: vista analítica de la red
     if (vehInstanced) vehInstanced.visible = true;
     if (roadMat) roadMat.color.set(0x9099a3);
     renderer.render(scene, camera);
-    const fotoTecno = renderer.domElement.toDataURL("image/png");
+    const fotoTecno = renderer.domElement.toDataURL("image/webp");
 
     // Restaurar fondo original y estado de la escena base
     scene.background = origBg;
@@ -2495,7 +2495,7 @@
     scene.background = origBg;
     if (axoBorderMesh) axoBorderMesh.visible = borderVis;
     if (mainBurroMesh) mainBurroMesh.visible = burroVisPrev;
-    return off.toDataURL("image/png");
+    return off.toDataURL("image/webp");
   }
 
   // ---- OFFSET real de un poligono: el borde se desplaza hacia afuera
@@ -2568,7 +2568,7 @@
       camera.bottom = -viewSize * contextZoomOut;
       camera.updateProjectionMatrix();
       renderer.render(scene, camera);
-      natContextImg.src = renderer.domElement.toDataURL("image/png");
+      natContextImg.src = renderer.domElement.toDataURL("image/webp");
       // natLayerContext ya no se activa: ahora la Capa Base ES la
       // axonometria completa sin recorte, asi que mostrar OTRO contexto
       // de fondo detras seria redundante.
@@ -2594,7 +2594,7 @@
       toHide.forEach(o => { o.visible = false; });
       scene.background = new THREE.Color(0xffffff);
       renderer.render(scene, camera);
-      natWaterImg.src = renderer.domElement.toDataURL("image/png");
+      natWaterImg.src = renderer.domElement.toDataURL("image/webp");
       natWaterImg.style.display = "block";
       natWaterImg.style.objectFit = "fill";
       toHide.forEach((o, i) => { o.visible = prevVis[i]; });
@@ -3087,7 +3087,7 @@
       camera.bottom = -viewSize * contextZoomOut;
       camera.updateProjectionMatrix();
       renderer.render(scene, camera);
-      techContextImg.src = renderer.domElement.toDataURL("image/png");
+      techContextImg.src = renderer.domElement.toDataURL("image/webp");
       /* techLayerContext ya no se usa: el contexto va integrado en la base */
       camera.left = -viewSize * layerAspect;
       camera.right = viewSize * layerAspect;
@@ -4716,7 +4716,7 @@
       camera.bottom = -viewSize * contextZoomOut;
       camera.updateProjectionMatrix();
       renderer.render(scene, camera);
-      culContextImg.src = renderer.domElement.toDataURL("image/png");
+      culContextImg.src = renderer.domElement.toDataURL("image/webp");
       /* culLayerContext ya no se usa: el contexto va integrado en la base */
       camera.left = -viewSize * layerAspect;
       camera.right = viewSize * layerAspect;
@@ -5861,7 +5861,7 @@ window.takeSnapshotsAndStart = function() {
     if (vehInstanced) { vehInstanced.visible = false; vehInstanced.count = 0; }
     if (roadMat) roadMat.color.set(0x9099a3);
     renderer.render(scene, camera);
-    const fotoNatural = renderer.domElement.toDataURL('image/png');
+    const fotoNatural = renderer.domElement.toDataURL('image/webp', 0.7);
 
     if (vehInstanced) {
       vehInstanced.visible = true;
@@ -5870,12 +5870,12 @@ window.takeSnapshotsAndStart = function() {
     }
     if (roadMat) roadMat.color.set(0x7a838d);
     renderer.render(scene, camera);
-    const fotoCultural = renderer.domElement.toDataURL('image/png');
+    const fotoCultural = renderer.domElement.toDataURL('image/webp', 0.7);
 
     if (vehInstanced) vehInstanced.visible = true;
     if (roadMat) roadMat.color.set(0x9099a3);
     renderer.render(scene, camera);
-    const fotoTecno = renderer.domElement.toDataURL('image/png');
+    const fotoTecno = renderer.domElement.toDataURL('image/webp', 0.7);
 
     scene.background = origBg;
     renderer.setClearColor(0x000000, 1);
