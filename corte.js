@@ -339,7 +339,7 @@
     ribbonGeo.setAttribute("position", new THREE.Float32BufferAttribute(ribbonPos, 3));
     ribbonGeo.setAttribute("uv", new THREE.Float32BufferAttribute(ribbonUv, 2));
     ribbonGeo.computeVertexNormals();
-    const viaTex = new THREE.TextureLoader().load("./assets/textura_via.jpg");
+    const viaTex = new THREE.TextureLoader().load("https://anasoficasca-code.github.io/modelamiento2/assets/textura_via.jpg");
     viaTex.wrapS = THREE.RepeatWrapping;
     viaTex.wrapT = THREE.RepeatWrapping;
     const ribbonMat = new THREE.MeshStandardMaterial({ clippingPlanes: sectionClipPlanesArr,
@@ -531,7 +531,7 @@
   let treeInstanceData = null; // {x,z,w,h} por instancia, para recalcular el billboard al girar la camara
   let treeMesh = null;
   function buildTrees(trees) {
-    const treeTex = new THREE.TextureLoader().load("./assets/arbol_real4.png");
+    const treeTex = new THREE.TextureLoader().load("https://anasoficasca-code.github.io/modelamiento2/assets/arbol_real4.png");
     // Tarjeta plana (billboard) con la foto real completa (ya incluye
     // tronco y copa) — se pidio que se vea igual que la foto, no un
     // volumen 3D armado con esfera+cilindro por separado.
@@ -986,7 +986,7 @@
     geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
     geo.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
     geo.computeVertexNormals();
-    const waterTex = new THREE.TextureLoader().load("./assets/textura_agua2.jpg");
+    const waterTex = new THREE.TextureLoader().load("https://anasoficasca-code.github.io/modelamiento2/assets/textura_agua2.jpg");
     waterTex.wrapS = THREE.RepeatWrapping;
     waterTex.wrapT = THREE.RepeatWrapping;
     waterTexRef = waterTex;
@@ -997,7 +997,7 @@
     // "plana"/pintada, no renderizada. Se anima a una velocidad y escala
     // DISTINTA a la capa de color, para que el patron no se repita igual
     // y parezca mas organico (dos capas de oleaje superpuestas).
-    const bumpTex = new THREE.TextureLoader().load("./assets/textura_agua2.jpg");
+    const bumpTex = new THREE.TextureLoader().load("https://anasoficasca-code.github.io/modelamiento2/assets/textura_agua2.jpg");
     bumpTex.wrapS = THREE.RepeatWrapping;
     bumpTex.wrapT = THREE.RepeatWrapping;
     bumpTex.repeat.set(2.3, 2.3);
@@ -1079,7 +1079,7 @@
     geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
     geo.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
     geo.computeVertexNormals();
-    const pastoTex = new THREE.TextureLoader().load("./assets/textura_pasto.jpg");
+    const pastoTex = new THREE.TextureLoader().load("https://anasoficasca-code.github.io/modelamiento2/assets/textura_pasto.jpg");
     pastoTex.wrapS = THREE.RepeatWrapping;
     pastoTex.wrapT = THREE.RepeatWrapping;
     const mat = new THREE.MeshStandardMaterial({ clippingPlanes: sectionClipPlanesArr, map: pastoTex, color: 0xadaa90, roughness: 0.95, transparent: true, opacity: 0.6, side: THREE.DoubleSide });
@@ -1195,7 +1195,7 @@
   }
 
   function loadIntersections() {
-    return fetch("./assets/kennedy_intersecciones.json")
+    return fetch("https://anasoficasca-code.github.io/modelamiento2/assets/kennedy_intersecciones.json")
       .then(r => { if (!r.ok) throw new Error("no se pudo cargar intersecciones"); return r.json(); })
       .then(data => { buildIntersections(data); })
       .catch(err => console.warn("No se pudieron cargar las intersecciones:", err));
@@ -1238,7 +1238,7 @@
   // terreno real no cubre alguna zona del borde. ----
   let terrainMesh = null;
   function loadTerrain() {
-    return loadTriMesh("./assets/kennedy_terreno.json", 0xe4e6e2, { roughness: 0.95, metalness: 0 })
+    return loadTriMesh("https://anasoficasca-code.github.io/modelamiento2/assets/kennedy_terreno.json", 0xe4e6e2, { roughness: 0.95, metalness: 0 })
       .then(mesh => {
         if (!mesh) return;
         mesh.castShadow = false; // el suelo no necesita proyectar sombra sobre si mismo
@@ -1366,8 +1366,8 @@
       loadManzanas();
       loadParques();
       // loadIntersections(); // quitado: semaforos/cruces peatonales, a pedido del usuario
-      loadTriMesh("./assets/kennedy_roofs_flat.json", 0xffffff);    // techos planos con parapeto ya modelado
-      loadTriMesh("./assets/kennedy_facades.json", 0xa05a41);       // fachadas verificadas con StreetView
+      loadTriMesh("https://anasoficasca-code.github.io/modelamiento2/assets/kennedy_roofs_flat.json", 0xffffff);    // techos planos con parapeto ya modelado
+      loadTriMesh("https://anasoficasca-code.github.io/modelamiento2/assets/kennedy_facades.json", 0xa05a41);       // fachadas verificadas con StreetView
       // loadTerrain(); // quitado a pedido del usuario, vuelve al plano liso
       return loadVehicles();
     })
@@ -3339,8 +3339,8 @@
   // ============================================================
   const LLANOS_REAL = { x: -16094, y: -2029 }; // coordenada dada por el usuario (4.5744, -74.2990)
   const NORTE_REAL = { x: 7400, y: 20000 };    // entrada de migratorias boreales (patos) desde el norte
-  const garzaImg = new Image(); garzaImg.src = "./assets/garza.png";
-  const tinguaImg = new Image(); tinguaImg.src = "./assets/tingua.png";
+  const garzaImg = new Image(); garzaImg.src = "https://anasoficasca-code.github.io/modelamiento2/assets/garza.png";
+  const tinguaImg = new Image(); tinguaImg.src = "https://anasoficasca-code.github.io/modelamiento2/assets/tingua.png";
   function ptInPoly(x, y, pts) {
     let inside = false;
     for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
