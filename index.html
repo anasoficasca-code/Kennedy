@@ -147,11 +147,11 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 // Las primeras 3 vienen de modelamiento2 (axonometrías originales).
 // La 4ª apunta a nuestro nuevo "network.html" local y ultra-ligero.
 var SCENES = [
-  { c:'#8052ff', n:'01', t:'Simulación 3D de tránsito', href:'https://anasoficasca-code.github.io/modelamiento2/modulo-08-3d.html',
+  { c:'#8052ff', n:'01', t:'Simulación 3D de tránsito', href:'https://anasoficasca-code.github.io/modelamiento2/modulo-08-3d.html?embed=1',
     d:'El flujo vehicular corriendo en vivo sobre la malla vial real de Kennedy — arrastra para girar, rueda para zoom.' },
-  { c:'#ffb829', n:'02', t:'Corte axonométrico', href:'https://anasoficasca-code.github.io/modelamiento2/modulo-10-corte.html',
-    d:'Seis límites móviles: mueve cualquiera y el modelo del territorio se corta al instante para revelar lo que hay debajo.' },
-  { c:'#4fdccc', n:'03', t:'Problemáticas de Kennedy', href:'https://anasoficasca-code.github.io/modelamiento2/modulo-12-problemas.html',
+  { c:'#ffb829', n:'02', t:'Navegador multiescalar', href:'https://anasoficasca-code.github.io/modelamiento2/modulo-05.html?embed=1',
+    d:'Las escalas del territorio: haz clic para revelar las capas estructurales una por una, desde la UPL hasta la escala de manzana.' },
+  { c:'#4fdccc', n:'03', t:'Problemáticas de Kennedy', href:'https://anasoficasca-code.github.io/modelamiento2/modulo-12-problemas.html?embed=1',
     d:'La red causal completa sobre el mapa 3D real: cada burbuja es una causa, cada flecha una relación del POT en Kennedy.' },
   { c:'#ff4d82', n:'04', t:'Colapso operativo y logístico (Red Dinámica)', href:'network.html',
     d:'Nueva visualización de la red: Nodos interactivos y flujos directos/indirectos. Destaca los Hubs y calcula los Nodos Puente que sostienen el sistema.' }
@@ -187,6 +187,23 @@ var dots = [].slice.call(document.querySelectorAll('.thread-dot'));
 var threadFill = document.getElementById('threadFill');
 var activeIdx = -1;
 
+function hideIframeUI(iframe) {
+  try {
+    var doc = iframe.contentWindow.document;
+    if (!doc) return;
+    var style = doc.createElement('style');
+    // Inyectamos CSS para ocultar las barras laterales y los menús en las axonometrías incrustadas
+    style.textContent = `
+      .sidebar, .site-nav, .navigation-unified, aside, .nav, header { display: none !important; }
+      .app, .main, body, .viewport, .map-container, #map { padding-left: 0 !important; margin-left: 0 !important; left: 0 !important; width: 100% !important; max-width: 100% !important; }
+      .overlay-tools { left: 20px !important; }
+    `;
+    doc.head.appendChild(style);
+  } catch(e) {
+    console.log('No se pudo inyectar CSS en el iframe (CORS local o restringido)', e);
+  }
+}
+
 var obs = new IntersectionObserver(function(entries){
   entries.forEach(function(e){
     var el = e.target;
@@ -195,6 +212,7 @@ var obs = new IntersectionObserver(function(entries){
       // Lazy load del iframe
       var iframe = el.querySelector('iframe');
       if (iframe && !iframe.src) {
+        iframe.onload = function() { hideIframeUI(iframe); };
         iframe.src = iframe.getAttribute('data-src');
       }
     }
