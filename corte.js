@@ -5837,10 +5837,7 @@ window.thickenLines = function() {
     scene.traverse((child) => {
         if (child.isLineSegments || child.isLine) {
             if (child.material) {
-                child.material.linewidth = 3;
-                child.material.color.setHex(0x000000);
-                child.material.opacity = 1;
-                child.material.transparent = false;
+                child.material.linewidth = 1; child.material.color.setHex(0x555555); child.material.opacity = 0.5; child.material.transparent = true;
                 child.material.needsUpdate = true;
             }
         }
