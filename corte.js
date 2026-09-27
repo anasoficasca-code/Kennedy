@@ -39,8 +39,8 @@
   scene.add(sceneRoot);
 
   const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 5, 2000);
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true, alpha: true }); // alpha:true agregado para poder capturar fondos transparentes en las subcapas de escala tecnologica (sin afectar la vista principal, que sigue fijando su propio color de fondo opaco)
-  renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: window.location.search.includes('lowpoly') ? false : true, preserveDrawingBuffer: true, alpha: true }); // alpha:true agregado para poder capturar fondos transparentes en las subcapas de escala tecnologica (sin afectar la vista principal, que sigue fijando su propio color de fondo opaco)
+  renderer.setPixelRatio(window.location.search.includes('lowpoly') ? 1 : Math.min(2, window.devicePixelRatio || 1));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.BasicShadowMap;
   renderer.localClippingEnabled = true; // para la caja de seccion (corte del modelo)
@@ -70,7 +70,7 @@
   const sectionCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 1, 3000);
   let sectionRenderer = null, sectionCutZ = null;
   if (sectionCanvas2) {
-    sectionRenderer = new THREE.WebGLRenderer({ canvas: sectionCanvas2, antialias: true, alpha: true });
+    sectionRenderer = new THREE.WebGLRenderer({ canvas: sectionCanvas2, antialias: window.location.search.includes('lowpoly') ? false : true, alpha: true });
     sectionRenderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
     sectionRenderer.localClippingEnabled = true;
     sectionRenderer.setClearColor(0xeef2f5, 1);
@@ -149,7 +149,7 @@
   scene.add(sun);
   scene.add(sun.target);
   sun.castShadow = true;
-  sun.shadow.mapSize.set(4096, 4096);
+  sun.shadow.mapSize.set(window.location.search.includes('lowpoly') ? 1024 : 4096, window.location.search.includes('lowpoly') ? 1024 : 4096);
   sun.shadow.camera.near = 10;
   sun.shadow.camera.far = 2600;
   sun.shadow.bias = -0.0003;
@@ -1635,6 +1635,8 @@
     if (noiseMesh) noiseMesh.visible = noiseOn; if (birdsGroup) birdsGroup.visible = birdOn;
   }
   function animate(now) {
+    if (window.disableAll3D) return;
+
     requestAnimationFrame(animate);
     if (playing && timesteps.length) {
       if (lastFrameAt == null) lastFrameAt = now;

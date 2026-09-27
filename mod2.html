@@ -150,7 +150,7 @@
 
   <!-- Iframe con el corte 3D VIVO -->
   <div class="corte-wrapper">
-    <iframe id="corteFrame" src="corte.html?embed=1" onload="injectHacksCorte(this)"></iframe>
+    <iframe id="corteFrame" src="corte.html?embed=1&lowpoly=1" onload="injectHacksCorte(this)"></iframe>
   </div>
 
   <!-- Iframe Principal con el corte axonométrico (Explosión) -->
@@ -204,7 +204,10 @@
 
       if (masterStep === 0) {
         document.body.classList.add('is-active');
-        if(winAxo.takeSnapshotsAndStart) winAxo.takeSnapshotsAndStart();
+        if(winAxo.takeSnapshotsAndStart) {
+           winAxo.takeSnapshotsAndStart();
+           winAxo.disableAll3D = true; // Apagar el motor 3D del iframe superior para quitar lag!
+        }
         
         // Coordenadas del usuario: Rot: 144, U(X): 33-38, V(Z): 31-52, Y: 0-100
         if(winCorte.setCustomCut) {
