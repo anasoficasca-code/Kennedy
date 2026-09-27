@@ -99,7 +99,12 @@
   </style>
 </head>
 <body>
-  
+  <div id="main-loader" style="position:fixed; inset:0; z-index:999999; background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; transition:opacity 1s ease;">
+    <i class="fa-solid fa-circle-notch fa-spin" style="font-size:3rem; color:#24c8bd; margin-bottom:20px;"></i>
+    <h2 style="font-family:'Geist',sans-serif; color:#333; margin:0;">Cargando Entorno 3D...</h2>
+    <p style="color:#666; font-size:14px; margin-top:8px;">Descargando geometrías del territorio (puede tardar unos segundos)</p>
+  </div>
+
   <div class="top-right-controls">
     <a href="index.html" class="back-btn">
       <i class="fa-solid fa-arrow-left"></i> Volver
@@ -166,6 +171,16 @@
 
     let masterStep = -1;
 
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const loader = document.getElementById('main-loader');
+        if(loader) {
+          loader.style.opacity = '0';
+          setTimeout(() => loader.remove(), 1000);
+        }
+      }, 7000); // Dar 7 segundos para que descargue los JSONs pesados
+    });
+
     window.advanceMasterSequence = function() {
       masterStep++;
       if (masterStep >= dataSequence.length) masterStep = 1;
@@ -174,38 +189,55 @@
       if (!winAxo) return;
 
       if (masterStep === 0) {
+        // Mostrar estado de carga en la UI inmediatamente
         document.body.classList.add('is-active');
+        document.getElementById('ui-subtitle').innerText = "Procesando...";
+        document.getElementById('ui-desc').innerText = "Generando vistas 3D. Un momento...";
         if (winAxo.document && winAxo.document.body) {
            winAxo.document.body.classList.add('is-active');
         }
         
-        // El iframe unico toma las fotos (que iran arriba) y luego aplica el corte 3D (que se vera abajo)
-        if(winAxo.takeSnapshotsAndStart) winAxo.takeSnapshotsAndStart();
-        
-        // Aplicar el corte 3D al motor principal (que ahora esta posicionado abajo)
-        if(winAxo.setCustomCut) {
-          winAxo.setCustomCut(144, 33, 38, 31, 52, 0, 100, 67.7, 22.6, 23.6, 121.7, 20.0, -15.9, 2.27);
-        }
+        // Retrasar la operacion pesada de WebGL para permitir que el navegador pinte la UI primero
+        setTimeout(() => {
+          // El iframe unico toma las fotos (que iran arriba) y luego aplica el corte 3D (que se vera abajo)
+          if(winAxo.takeSnapshotsAndStart) winAxo.takeSnapshotsAndStart();
+          
+          // Amplié el corte (X:20-60) para asegurar que se vea geometría y no quede blanco
+          if(winAxo.setCustomCut) {
+            winAxo.setCustomCut(144, 20, 60, 31, 52, 0, 100, 67.7, 22.6, 23.6, 121.7, 20.0, -15.9, 2.27);
+          }
+          
+          // Actualizar UI con datos reales
+          actualizarUI(masterStep);
+        }, 150);
       } 
       else if (masterStep >= 1 && masterStep <= 4) {
         if(winAxo.triggerNextNatural) winAxo.triggerNextNatural();
+        actualizarUI(masterStep);
       }
       else if (masterStep === 5) {
         if(winAxo.closeNaturalExplode) winAxo.closeNaturalExplode();
         if(winAxo.openCulturalExplode) winAxo.openCulturalExplode();
+        actualizarUI(masterStep);
       }
       else if (masterStep >= 6 && masterStep <= 8) {
         if(winAxo.triggerNextCultural) winAxo.triggerNextCultural();
+        actualizarUI(masterStep);
       }
       else if (masterStep === 9) {
         if(winAxo.closeCulturalExplode) winAxo.closeCulturalExplode();
         if(winAxo.openTechExplode) winAxo.openTechExplode();
+        actualizarUI(masterStep);
       }
       else if (masterStep >= 10 && masterStep <= 13) {
         if(winAxo.triggerNextTech) winAxo.triggerNextTech();
+        actualizarUI(masterStep);
       }
+    };
 
-      const d = dataSequence[masterStep];
+    function actualizarUI(step) {
+      const d = dataSequence[step];
+      if(!d) return;
       document.getElementById('ui-subtitle').innerText = d.sub;
       document.getElementById('ui-subtitle').style.color = d.color;
       document.getElementById('ui-desc').innerText = d.desc;
@@ -220,7 +252,7 @@
       
       document.getElementById('ui-progress').style.width = d.prog + '%';
       document.getElementById('ui-progress').style.background = d.color;
-    };
+    }
 
     document.body.addEventListener('click', (e) => {
       if(e.target.closest('.back-btn')) return;
