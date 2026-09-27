@@ -3,31 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Módulo 2 - Corte Axonométrico Interactivo</title>
+  <title>Módulo 2 - Capas Axonométricas</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     body, html { 
       margin: 0; padding: 0; width: 100vw; height: 100vh; 
       overflow: hidden !important; background: #f8f9fa; 
-      font-family: 'Geist', sans-serif; color: #1a1d20;
-      box-sizing: border-box;
+      font-family: 'Geist', sans-serif;
     }
-    *, *:before, *:after { box-sizing: inherit; }
     
-    /* Contenedor del Iframe Principal ÚNICO */
     .iframe-wrapper {
-      position: absolute; inset: 0; 
-      transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
-      z-index: 10;
+      position: absolute; inset: 0; z-index: 10;
     }
-    iframe { width: 100%; height: 100%; border: none; display: block; background: transparent; overflow: hidden !important; }
+    iframe { width: 100%; height: 100%; border: none; display: block; overflow: hidden !important; }
 
-    /* Controles Top Right iniciales */
     .top-right-controls {
       position: absolute; top: 15px; right: 15px; z-index: 9999;
-      display: flex; flex-direction: column; align-items: flex-end; gap: 12px;
-      transition: opacity 0.5s ease;
     }
     body.is-active .top-right-controls { display: none; }
 
@@ -35,71 +27,20 @@
       background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px);
       border: 1px solid rgba(0, 0, 0, 0.1);
       color: #1a1d20; padding: 10px 20px; border-radius: 999px;
-      font-size: 13px; font-weight: 600; text-decoration: none; text-transform: uppercase; letter-spacing: 0.05em;
+      font-size: 13px; font-weight: 600; text-decoration: none; text-transform: uppercase;
       display: flex; align-items: center; gap: 8px; cursor: pointer;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
-    .back-btn:hover { background: #fff; transform: scale(1.05); }
 
-    /* Panel de Convenciones (Derecha, Muy Angosto) */
-    .sidebar-panel {
-      position: absolute; right: 15px; top: 15px; bottom: 15px; width: calc(22vw - 30px);
-      background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(25px);
-      border: 1px solid rgba(0, 0, 0, 0.05); border-radius: 12px;
-      padding: 20px 15px; display: flex; flex-direction: column;
-      opacity: 0; transform: translateX(30px); transition: all 1s ease 0.1s;
-      z-index: 999; box-shadow: -10px 0 30px rgba(0,0,0,0.05);
-      overflow-y: auto; overflow-x: hidden;
-      pointer-events: none;
+    #main-loader {
+      position:fixed; inset:0; z-index:999999; background:#fff; 
+      display:flex; flex-direction:column; align-items:center; justify-content:center; transition:opacity 1s ease;
     }
-    .sidebar-panel::-webkit-scrollbar { display: none; }
-    body.is-active .sidebar-panel { opacity: 1; transform: translateX(0); pointer-events: auto; }
-
-    .tag-temporada {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: rgba(36, 200, 189, 0.1); color: #148f86;
-      padding: 4px 10px; border-radius: 999px; font-size: 9px;
-      font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
-      margin-bottom: 10px; align-self: flex-start;
-    }
-    .humedal-title {
-      font-size: 22px; font-weight: 700; line-height: 1.1; margin: 0 0 5px 0; color: #111;
-    }
-    .stage-subtitle {
-      font-size: 12px; color: #f59e0b; font-weight: 600; margin-bottom: 15px;
-    }
-    
-    .desc-box {
-      background: rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.04);
-      padding: 10px; border-radius: 8px; margin-bottom: 15px;
-      font-size: 11px; line-height: 1.4; color: #444;
-    }
-
-    .agents-list { display: flex; flex-direction: column; gap: 6px; }
-    .agent-item {
-      display: flex; flex-direction: column; justify-content: center;
-      padding: 8px 10px; background: #fff; border-radius: 6px;
-      border-left: 3px solid #ccc; border: 1px solid #eee; border-left-width: 4px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-    }
-    .agent-name { font-size: 10px; font-weight: 700; color: #333; margin-bottom: 2px; }
-    .agent-val { font-size: 11px; color: #666; font-variant-numeric: tabular-nums; }
-
-    /* Progreso global */
-    .progress-bar { position: absolute; bottom: 0; left: 0; height: 4px; background: #24c8bd; width: 0%; transition: width 0.3s ease; border-radius: 0 0 12px 12px; }
-
-    .hint-click {
-      position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
-      color: #666; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
-      pointer-events: none; animation: pulse 2s infinite; z-index: 100;
-      background: rgba(255,255,255,0.9); padding: 8px 16px; border-radius: 999px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-    @keyframes pulse { 0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.7; } 50% { transform: translateX(-50%) scale(1.05); opacity: 1; } }
-    body.is-active .hint-click { display: none; }
   </style>
 </head>
 <body>
-  <div id="main-loader" style="position:fixed; inset:0; z-index:999999; background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; transition:opacity 1s ease;">
+  
+  <div id="main-loader">
     <i class="fa-solid fa-circle-notch fa-spin" style="font-size:3rem; color:#24c8bd; margin-bottom:20px;"></i>
     <h2 style="font-family:'Geist',sans-serif; color:#333; margin:0;">Cargando Entorno 3D...</h2>
     <p style="color:#666; font-size:14px; margin-top:8px;">Descargando geometrías del territorio (puede tardar unos segundos)</p>
@@ -107,68 +48,17 @@
 
   <div class="top-right-controls">
     <a href="index.html" class="back-btn">
-      <i class="fa-solid fa-arrow-left"></i> Volver
+      <i class="fa-solid fa-arrow-left"></i> Volver al Menú
     </a>
   </div>
 
-  <div class="hint-click">Haz clic en el modelo para iniciar secuencia</div>
-
-  <!-- Panel de Convenciones -->
-  <div class="sidebar-panel">
-    <div class="tag-temporada"><i class="fa-solid fa-cloud-rain"></i> Lluvias</div>
-    <h1 class="humedal-title">Humedal</h1>
-    <div class="stage-subtitle" id="ui-subtitle">Dimensión Natural</div>
-    
-    <div class="desc-box" id="ui-desc">Iniciando el análisis hídrico.</div>
-
-    <div class="agents-list" id="ui-agents"></div>
-    
-    <div class="progress-bar" id="ui-progress"></div>
-    
-    <a href="index.html" class="back-btn" style="margin-top: auto; align-self: flex-start; width: 100%; justify-content: center; box-sizing: border-box;">
-      <i class="fa-solid fa-arrow-left"></i> Menú
-    </a>
-  </div>
-
-  <!-- Iframe Principal UNICO -->
   <div class="iframe-wrapper">
     <iframe id="mainFrame" src="corte.html?embed=1" onload="injectHacksAxo(this)"></iframe>
   </div>
 
   <script>
-    const dataSequence = [
-      // 0: Natural Base
-      { sub: "Dim. Natural", desc: "Estado inicial.", color: "#148f86", prog: 5, agents: [{n:"Elevación media", v:"2540 msnm"}] },
-      // 1: Nat 1
-      { sub: "Agua", desc: "Zonas de inundación.", color: "#2563eb", prog: 15, agents: [{n:"Cota inundación", v:"2542.5m"}] },
-      // 2: Nat 2
-      { sub: "Avifauna", desc: "Rutas migratorias.", color: "#059669", prog: 20, agents: [{n:"Especies", v:"34"}, {n:"Mirlas", v:"240"}] },
-      // 3: Nat 3
-      { sub: "Flora", desc: "Cobertura vegetal.", color: "#65a30d", prog: 25, agents: [{n:"Densidad", v:"42 arb/ha"}] },
-      // 4: Nat 4
-      { sub: "Suelos", desc: "Absorción.", color: "#84cc16", prog: 30, agents: [{n:"Permeabilidad", v:"Saturado"}] },
-      
-      // 5: Cultural Base
-      { sub: "Dim. Cultural", desc: "Interacción humana.", color: "#d97706", prog: 40, agents: [{n:"Población", v:"12.5K/día"}] },
-      // 6: Cult 1
-      { sub: "Vías", desc: "Red vial principal.", color: "#ea580c", prog: 50, agents: [{n:"Flujo", v:"Alto"}, {n:"Conflictos", v:"3"}] },
-      // 7: Cult 2
-      { sub: "Usos", desc: "Usos del suelo.", color: "#dc2626", prog: 60, agents: [{n:"Residencial", v:"60%"}] },
-      // 8: Cult 3
-      { sub: "Percepción", desc: "Zonas de apropiación.", color: "#ca8a04", prog: 70, agents: [{n:"Apropiación", v:"Alta"}] },
-      
-      // 9: Tech Base
-      { sub: "Dim. Tecnológica", desc: "Infraestructura.", color: "#7c3aed", prog: 80, agents: [{n:"Cobertura", v:"95%"}] },
-      // 10: Tech 1
-      { sub: "Energía", desc: "Tendido eléctrico.", color: "#9333ea", prog: 85, agents: [{n:"Carga máxima", v:"15 MVA"}] },
-      // 11: Tech 2
-      { sub: "Acueducto", desc: "Alcantarillado.", color: "#a855f7", prog: 90, agents: [{n:"Riesgo rebose", v:"Alto"}] },
-      // 12: Tech 3
-      { sub: "Datos", desc: "Sensores ambientales.", color: "#c084fc", prog: 95, agents: [{n:"Sensores", v:"12"}] },
-      // 13: Tech 4
-      { sub: "Sistemas", desc: "Conexión urbana.", color: "#d8b4fe", prog: 100, agents: [{n:"Eficiencia", v:"78%"}] }
-    ];
-
+    // 14 pasos totales (Base + Capas)
+    const totalSteps = 14;
     let masterStep = -1;
 
     window.addEventListener('load', () => {
@@ -178,81 +68,43 @@
           loader.style.opacity = '0';
           setTimeout(() => loader.remove(), 1000);
         }
-      }, 7000); // Dar 7 segundos para que descargue los JSONs pesados
+      }, 7000);
     });
 
     window.advanceMasterSequence = function() {
       masterStep++;
-      if (masterStep >= dataSequence.length) masterStep = 1;
+      if (masterStep >= totalSteps) masterStep = 1;
 
       const winAxo = document.getElementById("mainFrame").contentWindow;
       if (!winAxo) return;
 
       if (masterStep === 0) {
-        // Mostrar estado de carga en la UI inmediatamente
         document.body.classList.add('is-active');
-        document.getElementById('ui-subtitle').innerText = "Procesando...";
-        document.getElementById('ui-desc').innerText = "Generando vistas 3D. Un momento...";
-        if (winAxo.document && winAxo.document.body) {
-           winAxo.document.body.classList.add('is-active');
-        }
         
-        // Retrasar la operacion pesada de WebGL para permitir que el navegador pinte la UI primero
+        // Timeout para que el UI (si hubiera) responda antes de la pesada toma de fotos WebGL
         setTimeout(() => {
-          // El iframe unico toma las fotos (que iran arriba) y luego aplica el corte 3D (que se vera abajo)
           if(winAxo.takeSnapshotsAndStart) winAxo.takeSnapshotsAndStart();
-          
-          // Amplié el corte (X:20-60) para asegurar que se vea geometría y no quede blanco
-          if(winAxo.setCustomCut) {
-            winAxo.setCustomCut(144, 20, 60, 31, 52, 0, 100, 67.7, 22.6, 23.6, 121.7, 20.0, -15.9, 2.27);
-          }
-          
-          // Actualizar UI con datos reales
-          actualizarUI(masterStep);
-        }, 150);
+          // NOTA: Se eliminó setCustomCut por petición del usuario (ya no hay panel de corte)
+        }, 50);
       } 
       else if (masterStep >= 1 && masterStep <= 4) {
         if(winAxo.triggerNextNatural) winAxo.triggerNextNatural();
-        actualizarUI(masterStep);
       }
       else if (masterStep === 5) {
         if(winAxo.closeNaturalExplode) winAxo.closeNaturalExplode();
         if(winAxo.openCulturalExplode) winAxo.openCulturalExplode();
-        actualizarUI(masterStep);
       }
       else if (masterStep >= 6 && masterStep <= 8) {
         if(winAxo.triggerNextCultural) winAxo.triggerNextCultural();
-        actualizarUI(masterStep);
       }
       else if (masterStep === 9) {
         if(winAxo.closeCulturalExplode) winAxo.closeCulturalExplode();
         if(winAxo.openTechExplode) winAxo.openTechExplode();
-        actualizarUI(masterStep);
       }
       else if (masterStep >= 10 && masterStep <= 13) {
         if(winAxo.triggerNextTech) winAxo.triggerNextTech();
-        actualizarUI(masterStep);
       }
     };
-
-    function actualizarUI(step) {
-      const d = dataSequence[step];
-      if(!d) return;
-      document.getElementById('ui-subtitle').innerText = d.sub;
-      document.getElementById('ui-subtitle').style.color = d.color;
-      document.getElementById('ui-desc').innerText = d.desc;
-      
-      const agentsHtml = d.agents.map(a => `
-        <div class="agent-item" style="border-left-color: ${d.color}">
-          <span class="agent-name">${a.n}</span>
-          <span class="agent-val">${a.v}</span>
-        </div>
-      `).join('');
-      document.getElementById('ui-agents').innerHTML = agentsHtml;
-      
-      document.getElementById('ui-progress').style.width = d.prog + '%';
-      document.getElementById('ui-progress').style.background = d.color;
-    }
 
     document.body.addEventListener('click', (e) => {
       if(e.target.closest('.back-btn')) return;
@@ -265,10 +117,6 @@
         if (!doc) return;
         const style = doc.createElement('style');
         
-        // CSS MAGIC: We style the elements INSIDE the single iframe to match our layout!
-        // 1. The main 3D scene (sceneWrap) becomes the BOTTOM cross-section box.
-        // 2. The Explode Overlays (snapshots) become the TOP axonometry box.
-        
         style.textContent = `
           html, body, .app, .main { overflow: hidden !important; width: 100vw !important; height: 100vh !important; background: transparent !important; }
           aside.sidebar-icons-only, .site-nav, .navigation-unified, header.nav, .nav { display: none !important; }
@@ -277,48 +125,31 @@
           #penSvgOverlay { display: none !important; opacity: 0 !important; pointer-events: none !important; }
           .controls-bar { display: none !important; }
           #legendPanel { display: none !important; }
-          #sectionWrap { display: none !important; } /* We don't use the native sectionWrap, we use sceneWrap */
+          #sectionWrap { display: none !important; }
           
-          /* CUANDO SE ACTIVA LA SECUENCIA: */
-          body.is-active #sceneWrap {
+          /* Full screen explosion overlays */
+          #naturalExplodeOverlay, 
+          #culturalExplodeOverlay, 
+          #techExplodeOverlay {
              position: fixed !important;
-             bottom: 15px !important;
-             left: 15px !important;
-             width: 78vw !important;
-             height: calc(43vh - 45px) !important;
-             border-radius: 12px !important;
-             box-shadow: 0 10px 30px rgba(0,0,0,0.08) !important;
-             background: white !important;
-             z-index: 5 !important;
-             overflow: hidden !important;
-          }
-
-          body.is-active #naturalExplodeOverlay, 
-          body.is-active #culturalExplodeOverlay, 
-          body.is-active #techExplodeOverlay {
-             position: fixed !important;
-             top: 15px !important;
-             left: 15px !important;
-             width: 78vw !important;
-             height: 57vh !important;
-             border-radius: 12px !important;
-             box-shadow: 0 10px 40px rgba(0,0,0,0.1) !important;
-             background: white !important;
+             inset: 0 !important;
+             width: 100vw !important;
+             height: 100vh !important;
+             background: #f8f9fa !important;
              z-index: 10 !important;
              transform: none !important;
-             overflow: hidden !important;
           }
           
-          /* Ajuste interno para las imagenes de las capas (para que escalen bien) */
-          body.is-active .explode-clip {
-             transform: scale(0.9) translateY(5%) !important;
+          .explode-clip {
+             transform: scale(0.9) translateY(0) !important;
+             transform-origin: center center !important;
           }
         `;
         doc.head.appendChild(style);
         
-        // Escuchar cuando padre diga "is-active"
         iframe.contentWindow.addEventListener('click', () => {
-             doc.body.classList.add('is-active');
+             // Redirigir clics del iframe hacia el padre
+             if (window.advanceMasterSequence) window.advanceMasterSequence();
         });
       } catch(e) {}
     }
