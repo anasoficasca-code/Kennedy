@@ -127,6 +127,9 @@
           #legendPanel { display: none !important; }
           #sectionWrap { display: none !important; }
           
+          /* Esconder el mapa 3D en vivo una vez arranca la secuencia (para que no se cruce con las fotos) */
+          body.is-active #sceneWrap { display: none !important; }
+          
           /* Full screen explosion overlays */
           #naturalExplodeOverlay, 
           #culturalExplodeOverlay, 
@@ -135,9 +138,11 @@
              inset: 0 !important;
              width: 100vw !important;
              height: 100vh !important;
-             background: #f8f9fa !important;
+             background: transparent !important;
              z-index: 10 !important;
              transform: none !important;
+             box-shadow: none !important;
+             border: none !important;
           }
           
           .explode-clip {

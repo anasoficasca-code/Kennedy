@@ -1617,7 +1617,8 @@
     const hide = [currentBuildingMesh, currentBuildingEdgeMesh, currentBuildingCornerMesh, manzanasMesh, terrainMesh, axoBorderMesh, treeMeshes && treeMeshes[0] ? treeMeshes[0].mesh : null, ...currentRoadMeshes].filter(o => o && o.visible !== undefined);
     const prev = hide.map(o => o.visible); hide.forEach(o => { o.visible = false; });
     const pq = parqueMat ? parqueMat.opacity : null; if (parqueMat) parqueMat.opacity = 0;
-    const bg = scene.background; scene.background = null; renderer.setClearColor(0x000000, 0);
+    const bg = scene.background; scene.background = null;
+    if (axoBorderMesh) axoBorderMesh.visible = false; renderer.setClearColor(0x000000, 0);
     if (noiseMesh) noiseMesh.visible = true; if (birdsGroup) birdsGroup.visible = true;
     renderer.render(scene, camera);
     const src = renderer.domElement;
@@ -2018,6 +2019,7 @@
     // Fondo TRANSPARENTE fuera del rombo: solo el terreno y los edificios
     // se ven blancos; lo que queda afuera ya no tapa el texto/fondo.
     scene.background = null;
+    if (axoBorderMesh) axoBorderMesh.visible = false;
     renderer.setClearColor(0x000000, 0);
 
     // 1. Escala Natural: base arquitectónica 100% limpia, CERO carros, CERO ruido, CERO mirlas
@@ -2046,6 +2048,7 @@
 
     // Restaurar fondo original y estado de la escena base
     scene.background = origBg;
+    if (axoBorderMesh) axoBorderMesh.visible = true;
     renderer.setClearColor(0x000000, 1);
     if (roadMat && origRoadColor !== null) roadMat.color.set(origRoadColor);
     if (noiseMesh) noiseMesh.visible = origNoiseVis;
@@ -2480,7 +2483,8 @@
     renderer.clippingPlanes = origClip;
     rebuildFilteredGeometry();
     if (axoBorderMesh) axoBorderMesh.visible = false;
-    scene.background = null; renderer.setClearColor(0x000000, 0);
+    scene.background = null;
+    if (axoBorderMesh) axoBorderMesh.visible = false; renderer.setClearColor(0x000000, 0);
     renderer.render(scene, camera);
     c.globalAlpha = 1; c.drawImage(renderer.domElement, 0, 0);
     renderer.setClearColor(0x000000, 1);
@@ -2493,6 +2497,7 @@
     c.strokeStyle = "rgba(20,24,30,.55)"; c.lineWidth = Math.max(1, W / 900);
     c.beginPath(); pts.forEach((p, i) => i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])); c.closePath(); c.stroke();
     scene.background = origBg;
+    if (axoBorderMesh) axoBorderMesh.visible = true;
     if (axoBorderMesh) axoBorderMesh.visible = borderVis;
     if (mainBurroMesh) mainBurroMesh.visible = burroVisPrev;
     return off.toDataURL("image/webp");
@@ -2581,6 +2586,7 @@
       camera.updateProjectionMatrix();
     }
     scene.background = origBg;
+    if (axoBorderMesh) axoBorderMesh.visible = true;
 
     // Captura FOTOGRAFICA (no vectorial) de SOLO el agua, con la MISMA
     // camara exacta usada para fotoBase - al ser literalmente la misma
@@ -2599,6 +2605,7 @@
       natWaterImg.style.objectFit = "fill";
       toHide.forEach((o, i) => { o.visible = prevVis[i]; });
       scene.background = origBg;
+    if (axoBorderMesh) axoBorderMesh.visible = true;
     }
     if (roadMat && origRoadColor !== null) roadMat.color.set(origRoadColor);
     if (noiseMesh) noiseMesh.visible = origNoiseVis;
@@ -2933,7 +2940,8 @@
     // carros andando y la mancha de ruido (amarillo/naranja/rojo) que
     // generan al pasar, tal como pidio el usuario.
     if (techNoiseCanvas) {
-      scene.background = null; // transparente
+      scene.background = null;
+    if (axoBorderMesh) axoBorderMesh.visible = false; // transparente
       renderer.setClearColor(0x000000, 0);
       const roadVisPrev = currentRoadMeshes.map(m => m ? m.visible : null);
       currentRoadMeshes.forEach(m => { if (m) m.visible = false; });
@@ -3018,6 +3026,7 @@
     if (waterMat && waterOpacityPrev !== null) waterMat.opacity = waterOpacityPrev;
     if (parqueMat && parqueOpacityPrev !== null) parqueMat.opacity = parqueOpacityPrev;
     scene.background = origBg;
+    if (axoBorderMesh) axoBorderMesh.visible = true;
     if (roadMat && origRoadColor !== null) roadMat.color.set(origRoadColor);
     if (noiseMesh) noiseMesh.visible = origNoiseVis;
     if (vehInstanced) { vehInstanced.visible = origVehVis; vehInstanced.count = origVehCount; }
@@ -3105,6 +3114,7 @@
 
     // Restaurar estado original de la escena
     scene.background = origBg;
+    if (axoBorderMesh) axoBorderMesh.visible = true;
     if (roadMat && origRoadColor !== null) roadMat.color.set(origRoadColor);
     if (noiseMesh) noiseMesh.visible = origNoiseVis;
     if (birdsGroup) birdsGroup.visible = origBirdsVis;
@@ -4725,6 +4735,7 @@
       camera.updateProjectionMatrix();
     }
     scene.background = origBg;
+    if (axoBorderMesh) axoBorderMesh.visible = true;
 
     if (roadMat && origRoadColor !== null) roadMat.color.set(origRoadColor);
     if (noiseMesh) noiseMesh.visible = origNoiseVis;
@@ -5854,6 +5865,7 @@ window.takeSnapshotsAndStart = function() {
     const origBg = scene.background;
 
     scene.background = null;
+    if (axoBorderMesh) axoBorderMesh.visible = false;
     renderer.setClearColor(0x000000, 0);
 
     if (noiseMesh) noiseMesh.visible = false;
@@ -5878,6 +5890,7 @@ window.takeSnapshotsAndStart = function() {
     const fotoTecno = renderer.domElement.toDataURL('image/webp', 0.7);
 
     scene.background = origBg;
+    if (axoBorderMesh) axoBorderMesh.visible = true;
     renderer.setClearColor(0x000000, 1);
     if (roadMat && origRoadColor !== null) roadMat.color.set(origRoadColor);
     if (noiseMesh) noiseMesh.visible = origNoiseVis;
