@@ -5,22 +5,55 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Módulo 1 - Kennedy</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
   <style>
     body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #050308; font-family: 'Geist', sans-serif; }
     iframe { width: 100%; height: 100%; border: none; display: block; }
+    
+    /* Overlay Scanner Effect */
+    .scanner {
+      position: absolute; top: 0; left: 0; width: 100%; height: 10px;
+      background: linear-gradient(to bottom, transparent, rgba(128,82,255,0.4), transparent);
+      z-index: 50; pointer-events: none; opacity: 0.5;
+      animation: scan 4s linear infinite;
+    }
+    @keyframes scan { 0% { top: -10%; } 100% { top: 110%; } }
+
+    /* Dashboard UI Elements */
+    .dashboard-panel {
+      position: absolute; bottom: 30px; left: 30px; z-index: 100;
+      background: rgba(12, 10, 20, 0.7); backdrop-filter: blur(12px);
+      border: 1px solid rgba(128,82,255,0.3); border-radius: 16px;
+      padding: 20px 24px; color: #fff; width: 320px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 0 20px rgba(128,82,255,0.1);
+      animation: slideIn 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .panel-title { font-family: 'Space Grotesk', sans-serif; font-size: 14px; text-transform: uppercase; color: #8052ff; letter-spacing: 0.1em; margin-bottom: 16px; display: flex; justify-content: space-between; }
+    .panel-title .live { color: #ff4d82; animation: blink 2s infinite; }
+    .metric { margin-bottom: 12px; }
+    .metric-label { font-size: 12px; color: #9a93ad; text-transform: uppercase; }
+    .metric-value { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; color: #fff; }
+    .metric-bar { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-top: 6px; overflow: hidden; }
+    .metric-fill { height: 100%; background: #8052ff; width: 0%; transition: width 1s ease; }
+
+    @keyframes slideIn { from { opacity: 0; transform: translateX(-40px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    /* Vignette */
+    .vignette { position: absolute; inset: 0; pointer-events: none; z-index: 10; background: radial-gradient(circle, transparent 50%, rgba(5,3,8,0.8) 150%); }
+
     /* Botón Volver súper animado y top-right */
     .back-btn {
       position: absolute; top: 24px; right: 24px; z-index: 1000;
-      background: rgba(12, 10, 20, 0.6); backdrop-filter: blur(10px);
-      border: 1px solid rgba(128, 82, 255, 0.3);
+      background: rgba(12, 10, 20, 0.8); backdrop-filter: blur(10px);
+      border: 1px solid rgba(128, 82, 255, 0.5);
       color: #8052ff; padding: 12px 24px; border-radius: 999px;
       font-size: 13px; font-weight: 600; text-decoration: none; text-transform: uppercase; letter-spacing: 0.1em;
       display: flex; align-items: center; gap: 10px; cursor: pointer; overflow: hidden;
-      transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1); box-shadow: 0 0 20px rgba(128, 82, 255, 0.1);
+      transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1); box-shadow: 0 0 20px rgba(128, 82, 255, 0.2);
     }
-    .back-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(128, 82, 255, 0.2), transparent); transition: all 0.5s ease; }
-    .back-btn:hover { background: rgba(128, 82, 255, 0.1); border-color: rgba(128, 82, 255, 0.6); transform: scale(1.05); box-shadow: 0 0 30px rgba(128, 82, 255, 0.3); color: #fff; }
+    .back-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(128, 82, 255, 0.3), transparent); transition: all 0.5s ease; }
+    .back-btn:hover { background: rgba(128, 82, 255, 0.2); border-color: rgba(128, 82, 255, 0.8); transform: scale(1.05); box-shadow: 0 0 30px rgba(128, 82, 255, 0.4); color: #fff; }
     .back-btn:hover::before { left: 100%; }
     .back-btn span { display: inline-block; animation: floatText 3s ease-in-out infinite; }
     .back-btn span:nth-child(1) { animation-delay: 0.0s; } .back-btn span:nth-child(2) { animation-delay: 0.1s; }
@@ -30,11 +63,32 @@
   </style>
 </head>
 <body>
+  <div class="scanner"></div>
+  <div class="vignette"></div>
+
+  <div class="dashboard-panel">
+    <div class="panel-title">Flujo Logístico <span class="live">● LIVE</span></div>
+    
+    <div class="metric">
+      <div class="metric-label">Densidad Vehicular (V/km)</div>
+      <div class="metric-value" id="val1">482</div>
+      <div class="metric-bar"><div class="metric-fill" id="bar1"></div></div>
+    </div>
+    
+    <div class="metric">
+      <div class="metric-label">Carga en Nodos Puente</div>
+      <div class="metric-value" id="val2">84%</div>
+      <div class="metric-bar"><div class="metric-fill" id="bar2" style="background:#ff4d82;"></div></div>
+    </div>
+  </div>
+
   <a href="index.html" class="back-btn">
     <i class="fa-solid fa-arrow-left"></i>
     <div><span>V</span><span>o</span><span>l</span><span>v</span><span>e</span><span>r</span></div>
   </a>
+
   <iframe src="https://anasoficasca-code.github.io/modelamiento2/modulo-08-3d.html?embed=1" onload="hideUI(this)"></iframe>
+
   <script>
     function hideUI(iframe) {
       try {
@@ -44,11 +98,26 @@
         style.textContent = `
           .sidebar, .site-nav, .navigation-unified, aside, .nav, header { display: none !important; }
           .app, .main, body, .viewport, .map-container, #map { padding-left: 0 !important; margin-left: 0 !important; left: 0 !important; width: 100% !important; max-width: 100% !important; }
-          .overlay-tools { left: 20px !important; }
+          .overlay-tools { left: auto !important; right: 20px !important; top: 80px !important; }
+          .mapboxgl-control-container { display: none !important; }
         `;
         doc.head.appendChild(style);
       } catch(e) {}
     }
+
+    // Simulador de datos dinámicos
+    setInterval(() => {
+      document.getElementById('val1').innerText = Math.floor(450 + Math.random() * 80);
+      document.getElementById('bar1').style.width = (60 + Math.random() * 30) + '%';
+      
+      const v2 = Math.floor(75 + Math.random() * 20);
+      document.getElementById('val2').innerText = v2 + '%';
+      document.getElementById('bar2').style.width = v2 + '%';
+    }, 2500);
+    setTimeout(() => {
+      document.getElementById('bar1').style.width = '70%';
+      document.getElementById('bar2').style.width = '84%';
+    }, 100);
   </script>
 </body>
 </html>
