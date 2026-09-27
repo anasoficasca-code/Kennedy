@@ -2003,6 +2003,7 @@
     // }
     // return;
     
+    if (window.parent && window.parent.advanceMasterSequence) return;
     if (penActive) return; // mientras se dibuja el poligono, no se dispara la explosion
 
     // Guardar estado y fondo original
@@ -5804,3 +5805,79 @@
 
 })();
 
+
+
+// --- ADDED FOR MASTER SEQUENCE (mod2.html) ---
+window.takeSnapshotsAndStart = function() {
+    const origRoadColor = roadMat ? roadMat.color.getHex() : null;
+    const origNoiseVis = noiseMesh ? noiseMesh.visible : false;
+    const origBirdsVis = birdsGroup ? birdsGroup.visible : false;
+    const origVehVis = vehInstanced ? vehInstanced.visible : false;
+    const origBg = scene.background;
+
+    scene.background = null;
+    renderer.setClearColor(0x000000, 0);
+
+    if (noiseMesh) noiseMesh.visible = false;
+    if (birdsGroup) birdsGroup.visible = false;
+    if (vehInstanced) { vehInstanced.visible = false; vehInstanced.count = 0; }
+    if (roadMat) roadMat.color.set(0x9099a3);
+    renderer.render(scene, camera);
+    const fotoNatural = renderer.domElement.toDataURL('image/png');
+
+    if (vehInstanced) {
+      vehInstanced.visible = true;
+      vehInstanced.count = vehiclesAtTime(currentTime).length || 120;
+      renderVehiclesAt(currentTime);
+    }
+    if (roadMat) roadMat.color.set(0x7a838d);
+    renderer.render(scene, camera);
+    const fotoCultural = renderer.domElement.toDataURL('image/png');
+
+    if (vehInstanced) vehInstanced.visible = true;
+    if (roadMat) roadMat.color.set(0x9099a3);
+    renderer.render(scene, camera);
+    const fotoTecno = renderer.domElement.toDataURL('image/png');
+
+    scene.background = origBg;
+    renderer.setClearColor(0x000000, 1);
+    if (roadMat && origRoadColor !== null) roadMat.color.set(origRoadColor);
+    if (noiseMesh) noiseMesh.visible = origNoiseVis;
+    if (birdsGroup) birdsGroup.visible = origBirdsVis;
+    if (vehInstanced) {
+      vehInstanced.visible = origVehVis;
+      vehInstanced.count = origVehVis ? (vehiclesAtTime(currentTime).length || 0) : 0;
+    }
+
+    const imgNatural = document.getElementById('explodeImg1');
+    const imgCultural = document.getElementById('explodeImg2');
+    const imgTecno = document.getElementById('explodeImg3');
+    if (imgNatural) imgNatural.src = fotoNatural;
+    if (imgCultural) imgCultural.src = fotoCultural;
+    if (imgTecno) imgTecno.src = fotoTecno;
+
+    document.getElementById('sceneWrap').style.display = 'none';
+    
+    // INSTEAD OF SHOWING EXPLODE OVERLAY, WE GO DIRECTLY TO NATURAL
+    openNaturalExplode();
+};
+
+// Expose these so mod2.html can call them sequentially
+window.triggerNextNatural = function() { advanceNaturalAssemble(); };
+window.triggerNextCultural = function() { advanceCulturalAssemble(); };
+window.triggerNextTech = function() { advanceTechAssemble(); };
+window.closeNaturalExplode = closeNaturalExplode;
+window.openCulturalExplode = openCulturalExplode;
+window.closeCulturalExplode = closeCulturalExplode;
+window.openTechExplode = openTechExplode;
+
+// Remove old click handler from canvas so it doesnt conflict
+// canvas.replaceWith(canvas.cloneNode(true));
+window.masterCanvas = document.getElementById('sceneCanvas');
+
+// Redirect clicks on masterCanvas and any overlays to parent window
+window.addEventListener('click', (e) => {
+    if (window.parent && window.parent.advanceMasterSequence) {
+        window.parent.advanceMasterSequence();
+    }
+});
