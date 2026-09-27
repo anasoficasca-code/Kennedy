@@ -5894,7 +5894,7 @@ window.takeSnapshotsAndStart = function() {
     if (imgCultural) imgCultural.src = fotoCultural;
     if (imgTecno) imgTecno.src = fotoTecno;
 
-    document.getElementById('sceneWrap').style.display = 'none';
+    
     
     // INSTEAD OF SHOWING EXPLODE OVERLAY, WE GO DIRECTLY TO NATURAL
     openNaturalExplode();

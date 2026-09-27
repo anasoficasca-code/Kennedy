@@ -15,35 +15,13 @@
     }
     *, *:before, *:after { box-sizing: inherit; }
     
-    /* Contenedor del Iframe Principal (Axonometría) */
+    /* Contenedor del Iframe Principal ÚNICO */
     .iframe-wrapper {
       position: absolute; inset: 0; 
       transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
       z-index: 10;
     }
-    
-    body.is-active .iframe-wrapper {
-      inset: auto;
-      top: 15px; left: 15px;
-      width: 78vw; height: 57vh; /* 60vh less 3vh for margins */
-      border-radius: 12px;
-      overflow: hidden !important;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05);
-      background: white;
-    }
     iframe { width: 100%; height: 100%; border: none; display: block; background: transparent; overflow: hidden !important; }
-
-    /* Contenedor del Iframe Secundario (Corte 3D Vivo) */
-    .corte-wrapper {
-      position: absolute; bottom: 15px; left: 15px; 
-      width: 78vw; height: calc(43vh - 45px); /* 40vh less margins */
-      border-radius: 12px; overflow: hidden !important;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.05);
-      background: white;
-      opacity: 0; transform: translateY(20px); transition: all 1s ease 0.3s;
-      z-index: 5; pointer-events: none;
-    }
-    body.is-active .corte-wrapper { opacity: 1; transform: translateY(0); pointer-events: auto; }
 
     /* Controles Top Right iniciales */
     .top-right-controls {
@@ -70,11 +48,12 @@
       border: 1px solid rgba(0, 0, 0, 0.05); border-radius: 12px;
       padding: 20px 15px; display: flex; flex-direction: column;
       opacity: 0; transform: translateX(30px); transition: all 1s ease 0.1s;
-      z-index: 5; box-shadow: -10px 0 30px rgba(0,0,0,0.05);
+      z-index: 999; box-shadow: -10px 0 30px rgba(0,0,0,0.05);
       overflow-y: auto; overflow-x: hidden;
+      pointer-events: none;
     }
     .sidebar-panel::-webkit-scrollbar { display: none; }
-    body.is-active .sidebar-panel { opacity: 1; transform: translateX(0); }
+    body.is-active .sidebar-panel { opacity: 1; transform: translateX(0); pointer-events: auto; }
 
     .tag-temporada {
       display: inline-flex; align-items: center; gap: 6px;
@@ -117,8 +96,6 @@
     }
     @keyframes pulse { 0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.7; } 50% { transform: translateX(-50%) scale(1.05); opacity: 1; } }
     body.is-active .hint-click { display: none; }
-
-    .iframe-hacks { display: none; }
   </style>
 </head>
 <body>
@@ -131,7 +108,7 @@
 
   <div class="hint-click">Haz clic en el modelo para iniciar secuencia</div>
 
-  <!-- Panel de Convenciones (Derecha, Muy Angosto) -->
+  <!-- Panel de Convenciones -->
   <div class="sidebar-panel">
     <div class="tag-temporada"><i class="fa-solid fa-cloud-rain"></i> Lluvias</div>
     <h1 class="humedal-title">Humedal</h1>
@@ -148,14 +125,9 @@
     </a>
   </div>
 
-  <!-- Iframe con el corte 3D VIVO -->
-  <div class="corte-wrapper">
-    <iframe id="corteFrame" src="corte.html?embed=1&lowpoly=1" onload="injectHacksCorte(this)"></iframe>
-  </div>
-
-  <!-- Iframe Principal con el corte axonométrico (Explosión) -->
+  <!-- Iframe Principal UNICO -->
   <div class="iframe-wrapper">
-    <iframe id="axoFrame" src="corte.html?embed=1" onload="injectHacksAxo(this)"></iframe>
+    <iframe id="mainFrame" src="corte.html?embed=1" onload="injectHacksAxo(this)"></iframe>
   </div>
 
   <script>
@@ -198,20 +170,21 @@
       masterStep++;
       if (masterStep >= dataSequence.length) masterStep = 1;
 
-      const winAxo = document.getElementById("axoFrame").contentWindow;
-      const winCorte = document.getElementById("corteFrame").contentWindow;
-      if (!winAxo || !winCorte) return;
+      const winAxo = document.getElementById("mainFrame").contentWindow;
+      if (!winAxo) return;
 
       if (masterStep === 0) {
         document.body.classList.add('is-active');
-        if(winAxo.takeSnapshotsAndStart) {
-           winAxo.takeSnapshotsAndStart();
-           winAxo.disableAll3D = true; // Apagar el motor 3D del iframe superior para quitar lag!
+        if (winAxo.document && winAxo.document.body) {
+           winAxo.document.body.classList.add('is-active');
         }
         
-        // Coordenadas del usuario: Rot: 144, U(X): 33-38, V(Z): 31-52, Y: 0-100
-        if(winCorte.setCustomCut) {
-          winCorte.setCustomCut(144, 33, 38, 31, 52, 0, 100, 67.7, 22.6, 23.6, 121.7, 20.0, -15.9, 2.27);
+        // El iframe unico toma las fotos (que iran arriba) y luego aplica el corte 3D (que se vera abajo)
+        if(winAxo.takeSnapshotsAndStart) winAxo.takeSnapshotsAndStart();
+        
+        // Aplicar el corte 3D al motor principal (que ahora esta posicionado abajo)
+        if(winAxo.setCustomCut) {
+          winAxo.setCustomCut(144, 33, 38, 31, 52, 0, 100, 67.7, 22.6, 23.6, 121.7, 20.0, -15.9, 2.27);
         }
       } 
       else if (masterStep >= 1 && masterStep <= 4) {
@@ -259,38 +232,62 @@
         const doc = iframe.contentWindow.document;
         if (!doc) return;
         const style = doc.createElement('style');
+        
+        // CSS MAGIC: We style the elements INSIDE the single iframe to match our layout!
+        // 1. The main 3D scene (sceneWrap) becomes the BOTTOM cross-section box.
+        // 2. The Explode Overlays (snapshots) become the TOP axonometry box.
+        
         style.textContent = `
-          html, body, .app, .main { overflow: hidden !important; width: 100vw !important; height: 100vh !important; }
-          aside.sidebar-icons-only, .site-nav, .navigation-unified, header.nav, .nav { display: none !important; }
-          .mapboxgl-control-container, .mapbox-logo, .mapboxgl-ctrl-bottom-right, .mapboxgl-ctrl { display: none !important; opacity: 0 !important; pointer-events: none !important; }
-          #natClimatePanel, .cult-control-panel, .tech-control-panel, #explodeHint, #penToolBtn, #penCoordsOutput, .view-buttons { display: none !important; }
-          #penSvgOverlay { display: none !important; opacity: 0 !important; pointer-events: none !important; }
-          .controls-bar { display: none !important; }
-          #naturalExplodeOverlay, #culturalExplodeOverlay, #techExplodeOverlay {
-             transform: scale(0.9) translateY(0%) !important;
-             transform-origin: center center !important;
-             background: transparent !important;
-          }
-        `;
-        doc.head.appendChild(style);
-      } catch(e) {}
-    }
-
-    function injectHacksCorte(iframe) {
-      try {
-        const doc = iframe.contentWindow.document;
-        if (!doc) return;
-        const style = doc.createElement('style');
-        style.textContent = `
-          html, body, .app, .main { overflow: hidden !important; width: 100vw !important; height: 100vh !important; }
+          html, body, .app, .main { overflow: hidden !important; width: 100vw !important; height: 100vh !important; background: transparent !important; }
           aside.sidebar-icons-only, .site-nav, .navigation-unified, header.nav, .nav { display: none !important; }
           .mapboxgl-control-container, .mapbox-logo, .mapboxgl-ctrl-bottom-right, .mapboxgl-ctrl { display: none !important; opacity: 0 !important; pointer-events: none !important; }
           #natClimatePanel, .cult-control-panel, .tech-control-panel, #explodeHint, #penToolBtn, #penCoordsOutput, .view-buttons { display: none !important; }
           #penSvgOverlay { display: none !important; opacity: 0 !important; pointer-events: none !important; }
           .controls-bar { display: none !important; }
           #legendPanel { display: none !important; }
+          #sectionWrap { display: none !important; } /* We don't use the native sectionWrap, we use sceneWrap */
+          
+          /* CUANDO SE ACTIVA LA SECUENCIA: */
+          body.is-active #sceneWrap {
+             position: fixed !important;
+             bottom: 15px !important;
+             left: 15px !important;
+             width: 78vw !important;
+             height: calc(43vh - 45px) !important;
+             border-radius: 12px !important;
+             box-shadow: 0 10px 30px rgba(0,0,0,0.08) !important;
+             background: white !important;
+             z-index: 5 !important;
+             overflow: hidden !important;
+          }
+
+          body.is-active #naturalExplodeOverlay, 
+          body.is-active #culturalExplodeOverlay, 
+          body.is-active #techExplodeOverlay {
+             position: fixed !important;
+             top: 15px !important;
+             left: 15px !important;
+             width: 78vw !important;
+             height: 57vh !important;
+             border-radius: 12px !important;
+             box-shadow: 0 10px 40px rgba(0,0,0,0.1) !important;
+             background: white !important;
+             z-index: 10 !important;
+             transform: none !important;
+             overflow: hidden !important;
+          }
+          
+          /* Ajuste interno para las imagenes de las capas (para que escalen bien) */
+          body.is-active .explode-clip {
+             transform: scale(0.9) translateY(5%) !important;
+          }
         `;
         doc.head.appendChild(style);
+        
+        // Escuchar cuando padre diga "is-active"
+        iframe.contentWindow.addEventListener('click', () => {
+             doc.body.classList.add('is-active');
+        });
       } catch(e) {}
     }
   </script>
